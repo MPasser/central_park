@@ -22,6 +22,18 @@
     </properties>
 
     <dependencies>
+        <!-- transaction -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-tx</artifactId>
+        </dependency>
+
+        <!-- dependency module -->
+        <dependency>
+            <groupId>com.beta.demo</groupId>
+            <artifactId>central_park_dao</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 
     <build>
