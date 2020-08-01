@@ -3,5 +3,5 @@
 *.iml
 target
 
-# developing diary
-/project_log.md
+# temp file , to test the webpages
+/central_park_web/src/main/webapp/WEB-INF/views/test.html

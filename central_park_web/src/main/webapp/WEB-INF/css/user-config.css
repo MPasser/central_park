@@ -1,0 +1,17 @@
+@charset "UTF-8";
+
+#portrait-preview{
+    float: left;
+    width: 94px;
+    height: auto;
+}
+
+footer {
+    font-size: smaller;
+    text-align: center;
+}
+
+.main-container{
+    margin-top: 100px;
+}
+
