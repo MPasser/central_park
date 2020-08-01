@@ -1,5 +1,7 @@
-# idea info files
+# IDEA info files
 /**/.idea
 *.iml
 target
 
+# developing diary
+/project_log.md
