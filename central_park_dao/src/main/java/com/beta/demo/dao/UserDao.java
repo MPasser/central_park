@@ -24,12 +24,12 @@ public interface UserDao {
 
 
     /**
-     * select users by username
+     * select user by username
      *
      * @param username
      * @return
      */
-    List<User> selectByUsername(String username);
+    User selectByUsername(String username);
 
 
     /**

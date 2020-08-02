@@ -5,7 +5,7 @@ use central_park;
 -- 用户表
 create table t_user(
     id           varchar(100) primary key,
-    username     varchar(200) not null,
+    username     varchar(200) not null unique,
     password     varchar(200) not null,
     online_state int          not null,
     portrait     varchar(200) not null,

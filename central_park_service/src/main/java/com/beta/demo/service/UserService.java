@@ -23,12 +23,12 @@ public interface UserService {
 
 
     /**
-     * select users by username
+     * select user by username
      *
      * @param username
      * @return
      */
-    List<User> findByUsername(String username);
+    User findByUsername(String username);
 
 
     /**

@@ -2,7 +2,7 @@
 <!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.beta.demo.pojo.User">
+<mapper namespace="com.beta.demo.dao.UserDao">
 
 
     <resultMap id="full_fields_map" type="User">
@@ -63,7 +63,7 @@
         VALUES (null, #{username}, #{password}, #{onlineState}, #{portrait}, #{registDate}, #{email})
     </insert>
 
-    <delete id="deleteById" parameterMap="Integer">
+    <delete id="deleteById" parameterType="Integer">
         delete
         from t_user
         where id = #{id}

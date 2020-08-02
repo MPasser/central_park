@@ -16,6 +16,7 @@
     <script type="text/javascript" src="${ctx}/js/jquery-3.3.1.js"></script>
     <script type="text/javascript" src="${ctx}/js/bootstrap.js"></script>
     <script type="text/javascript" src="${ctx}/js/user-config.js"></script>
+
 </head>
 <body>
 
@@ -31,27 +32,35 @@
         <div class="panel-body">
 
             <!-- login form start -->
-            <form class="form-horizontal" action="${ctx}/regist" method="post">
+            <form class="form-horizontal" action="${ctx}/registNewUser" method="post">
 
                 <div class="form-group">
                     <label for="username" class="control-label col-xs-3">用户名:</label>
                     <div class="col-xs-6">
-                        <input type="text" class="form-control " id="username" placeholder="请输入用户名">
+                        <input type="text" class="form-control " id="username" placeholder="请输入用户名"
+                               onblur="checkUsername()">
+                    </div>
+                    <div class="col-xs-3 form-group-info" id="username-form-info">
                     </div>
                 </div>
-
 
 
                 <div class="form-group">
                     <label for="password" class="control-label col-xs-3">密码:</label>
                     <div class="col-xs-6">
-                        <input type="password" class="form-control " id="password" placeholder="请输入密码">
+                        <input type="password" class="form-control " id="password" placeholder="请输入密码 (6-20个字符)"
+                               onblur="checkPassword()">
+                    </div>
+                    <div class="col-xs-3 form-group-info" id="password-form-info">
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="re-password" class="control-label col-xs-3">重复密码:</label>
+                    <label for="repassword" class="control-label col-xs-3">重复密码:</label>
                     <div class="col-xs-6">
-                        <input type="password" class="form-control " id="re-password" placeholder="请输入密码">
+                        <input type="password" class="form-control " id="repassword" placeholder="请重复密码"
+                               onblur="checkRepassword()">
+                    </div>
+                    <div class="col-xs-3 form-group-info" id="repassword-form-info">
                     </div>
                 </div>
 
@@ -59,12 +68,18 @@
                 <div class="form-group">
                     <label for="email" class="control-label col-xs-3">邮箱:</label>
                     <div class="col-xs-6">
-                        <input type="text" class="form-control " id="email" placeholder="请输入邮箱">
+                        <input type="text" class="form-control " id="email" placeholder="请输入邮箱 (可选填)"
+                               onblur="checkEmail()">
+                    </div>
+                    <div class="col-xs-3 form-group-info" id="email-form-info">
                     </div>
                 </div>
 
                 <div class="form-group ">
-                    <label for="portrait" class="control-label col-xs-3">头像:</label>
+                    <div class="col-xs-2">
+                        <!-- 占位 -->
+                    </div>
+                    <label for="portrait" class="control-label col-xs-1">头像:</label>
                     <div class="col-xs-2">
                         <input type="file" class="form-control " id="portrait">
                     </div>
@@ -84,7 +99,8 @@
                     </div>
 
                     <div class="col-sm-3">
-                        <button type="button" class="btn btn-primary btn-block col-sm-4" id="btnSignUp">注&nbsp;&nbsp;册</button>
+                        <button type="submit" class="btn btn-primary btn-block col-sm-4" id="btnSignUp">注&nbsp;&nbsp;册
+                        </button>
                     </div>
 
                 </div>

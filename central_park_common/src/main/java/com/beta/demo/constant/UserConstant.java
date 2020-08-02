@@ -3,7 +3,9 @@ package com.beta.demo.constant;
 public interface UserConstant {
 
     /**
-     * constant of class User field onlineState
+     * constant of
+     * class : User
+     * field : onlineState
      * 1 means user is online
      * 0 means user is offline
      */
