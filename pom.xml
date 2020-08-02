@@ -17,8 +17,8 @@
     </modules>
 
     <name>central_park</name>
-    <!-- FIXME change it to the project's website -->
-    <url>http://www.example.com</url>
+    <!-- the project's website -->
+    <url>https://github.com/MPasser/central_park</url>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

@@ -12,8 +12,8 @@
     <artifactId>central_park_pojo</artifactId>
 
     <name>central_park_pojo</name>
-    <!-- FIXME change it to the project's website -->
-    <url>http://www.example.com</url>
+    <!-- the project's website -->
+    <url>https://github.com/MPasser/central_park/tree/master/central_park_pojo</url>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
