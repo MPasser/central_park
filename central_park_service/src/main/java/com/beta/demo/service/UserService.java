@@ -1,6 +1,8 @@
 package com.beta.demo.service;
 
+import com.beta.demo.dto.UserDto;
 import com.beta.demo.pojo.User;
+import org.apache.commons.fileupload.FileUploadException;
 
 import java.util.List;
 
@@ -34,9 +36,9 @@ public interface UserService {
     /**
      * insert user
      *
-     * @param user
+     * @param userDto
      */
-    void add(User user);
+    void add(UserDto userDto) throws FileUploadException;
 
 
     /**

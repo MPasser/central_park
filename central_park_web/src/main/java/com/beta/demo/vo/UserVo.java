@@ -8,7 +8,7 @@ public class UserVo {
     private CommonsMultipartFile portrait;
 
     private String email;
-
+    private boolean gender;
 
 
 
@@ -42,5 +42,13 @@ public class UserVo {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public boolean getGender() {
+        return gender;
+    }
+
+    public void setGender(boolean gender) {
+        this.gender = gender;
     }
 }

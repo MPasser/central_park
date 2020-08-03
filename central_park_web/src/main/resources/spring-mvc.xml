@@ -29,6 +29,9 @@
     <mvc:resources mapping="/images/**" location="/WEB-INF/images/"/>
     <mvc:resources mapping="/layer/**" location="/WEB-INF/layer/"/>
 
+    <!-- 文件处理器 -->
+    <bean class="org.springframework.web.multipart.commons.CommonsMultipartResolver" id="multipartResolver"/>
+
     <!-- FIXME 用于页面测试，记得删除 -->
     <mvc:view-controller path="/register" view-name="register"/>
 

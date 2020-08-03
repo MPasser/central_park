@@ -11,7 +11,7 @@
         <result property="password" column="password"/>
         <result property="portrait" column="portrait"/>
 
-        <result property="registDate" column="regist_date"/>
+        <result property="registerDate" column="regist_date"/>
         <result property="onlineState" column="online_state"/>
 
         <result property="gender" column="gender"/>
@@ -60,7 +60,7 @@
 
     <insert id="insert" parameterType="User">
         insert into t_user (id, username, password, online_state, portrait, regist_date, gender, email)
-        VALUES (null, #{username}, #{password}, #{onlineState}, #{portrait}, #{registDate}, #{email})
+        VALUES (#{id}, #{username}, #{password}, #{onlineState}, #{portrait}, #{registerDate}, #{gender}, #{email})
     </insert>
 
     <delete id="deleteById" parameterType="Integer">

@@ -1,13 +1,20 @@
 package com.beta.demo.service.impl;
 
 import com.beta.demo.dao.UserDao;
+import com.beta.demo.dto.UserDto;
 import com.beta.demo.pojo.User;
 import com.beta.demo.service.UserService;
+import com.beta.demo.util.StringUtils;
+import org.apache.commons.fileupload.FileUploadException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StreamUtils;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.List;
 
 @Service
@@ -43,8 +50,34 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void add(User user) {
-        // TODO
+    public void add(UserDto userDto) throws FileUploadException {
+        System.out.println(userDto);
+
+        // upload the portrait file
+        String filename = StringUtils.renameFilename(userDto.getPortraitFilename());
+        String filepath = userDto.getPortraitUploadPath() + File.separator + filename;
+
+        try {
+            StreamUtils.copy(userDto.getPortraitInputStream(),new FileOutputStream(filepath));
+        } catch (IOException e) {
+            throw new FileUploadException("文件上传异常："+ e.getMessage());
+        }
+
+        // insert the user
+        User user = new User();
+
+        user.setId(userDto.getId());
+        user.setUsername(userDto.getUsername());
+        user.setPassword(userDto.getPassword());
+        user.setPortrait(filepath);
+        user.setOnlineState(userDto.getOnlineState());
+        user.setRegisterDate(userDto.getRegisterDate());
+
+        user.setEmail(userDto.getEmail());
+        user.setGender(userDto.getGender());
+
+        userDao.insert(user);
+
     }
 
     @Override

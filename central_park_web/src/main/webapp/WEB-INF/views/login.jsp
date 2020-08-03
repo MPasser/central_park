@@ -41,7 +41,6 @@
                 </div>
 
 
-
                 <div class="form-group">
                     <label for="password" class="control-label col-xs-3">用户名:</label>
                     <div class="col-xs-6">
@@ -54,11 +53,13 @@
                         <!-- 占位 -->
                     </div>
                     <div class="col-sm-3">
-                        <button type="submit" class="btn btn-primary btn-block col-sm-4">登&nbsp;&nbsp;录</button>
+                        <button type="button" class="btn btn-info btn-block col-sm-4" id="btnSignUp" onclick="jumpToRegister()">注&nbsp;&nbsp;册
+                        </button>
                     </div>
                     <div class="col-sm-3">
-                        <button type="button" class="btn btn-primary btn-block col-sm-4" id="btnSignUp">注&nbsp;&nbsp;册</button>
+                        <button type="submit" class="btn btn-primary btn-block col-sm-4">登&nbsp;&nbsp;录</button>
                     </div>
+
 
                 </div>
 

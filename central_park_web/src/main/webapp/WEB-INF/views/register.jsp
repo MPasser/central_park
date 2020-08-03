@@ -32,12 +32,12 @@
         <div class="panel-body">
 
             <!-- login form start -->
-            <form class="form-horizontal" action="${ctx}/registNewUser" method="post">
+            <form class="form-horizontal" action="${ctx}/registNewUser" method="post" enctype="multipart/form-data">
 
                 <div class="form-group">
                     <label for="username" class="control-label col-xs-3">用户名:</label>
                     <div class="col-xs-6">
-                        <input type="text" class="form-control " id="username" placeholder="请输入用户名"
+                        <input type="text" class="form-control " id="username" name="username" placeholder="请输入用户名"
                                onblur="checkUsername()">
                     </div>
                     <div class="col-xs-3 form-group-info" id="username-form-info">
@@ -48,7 +48,7 @@
                 <div class="form-group">
                     <label for="password" class="control-label col-xs-3">密码:</label>
                     <div class="col-xs-6">
-                        <input type="password" class="form-control " id="password" placeholder="请输入密码 (6-20个字符)"
+                        <input type="password" class="form-control " id="password" name="password" placeholder="请输入密码 (6-20个字符)"
                                onblur="checkPassword()">
                     </div>
                     <div class="col-xs-3 form-group-info" id="password-form-info">
@@ -64,11 +64,32 @@
                     </div>
                 </div>
 
+                <div class="form-group">
+                    <label class="control-label col-xs-3">性别:</label>
+                    <div class="col-xs-6 text-left">
+                        <label>
+                            男<input type="radio" name="gender" value="true"/>
+                        </label>
+                        &nbsp;&nbsp;&nbsp;&nbsp;
+                        <label>
+                            女<input type="radio" name="gender" value="false"/>
+                        </label>
+                        &nbsp;&nbsp;&nbsp;&nbsp;
+                        <label>
+                            保密<input type="radio" name="gender" value=""/>
+                        </label>
+
+                    </div>
+                    <div class="col-xs-3 form-group-info" id="gender-form-info">
+                        <!-- 暂时用不上 -->
+                    </div>
+                </div>
+
 
                 <div class="form-group">
                     <label for="email" class="control-label col-xs-3">邮箱:</label>
                     <div class="col-xs-6">
-                        <input type="text" class="form-control " id="email" placeholder="请输入邮箱 (可选填)"
+                        <input type="text" class="form-control " id="email" name="email" placeholder="请输入邮箱 (可选填)"
                                onblur="checkEmail()">
                     </div>
                     <div class="col-xs-3 form-group-info" id="email-form-info">
@@ -79,9 +100,9 @@
                     <div class="col-xs-2">
                         <!-- 占位 -->
                     </div>
-                    <label for="portrait" class="control-label col-xs-1">头像:</label>
+                    <label for="portrait" class="control-label col-xs-1">（不选即使用默认）头像:</label>
                     <div class="col-xs-2">
-                        <input type="file" class="form-control " id="portrait">
+                        <input type="file" class="form-control " id="portrait" name="portrait" />
                     </div>
                     <label for="portrait-preview" class="control-label col-xs-2">头像预览:</label>
 

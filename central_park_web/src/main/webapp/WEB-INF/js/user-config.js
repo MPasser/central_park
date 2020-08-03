@@ -1,4 +1,17 @@
 /**
+ * login.jsp jump to register.jsp start
+ */
+function jumpToRegister() {
+    window.location="register";
+}
+
+/**
+ * login.jsp jump to register.jsp end
+ */
+
+
+
+/**
  * register form validation functions start
  */
 

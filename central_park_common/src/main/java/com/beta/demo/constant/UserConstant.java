@@ -12,4 +12,10 @@ public interface UserConstant {
     public static final Integer USER_STATE_ONLINE = 1;
     public static final Integer USER_STATE_OFFLINE = 0;
 
+
+    /**
+     * constant of
+     * portrait file upload path
+     */
+    public static final String PORTRAIT_UPLOAD_PATH = "/WEB-INF/upload/portrait";
 }
