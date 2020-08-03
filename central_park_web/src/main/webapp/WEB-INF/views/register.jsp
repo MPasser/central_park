@@ -14,6 +14,7 @@
     <link rel="stylesheet" href="${ctx}/css/bootstrap.css">
     <link rel="stylesheet" href="${ctx}/css/user-config.css">
     <script type="text/javascript" src="${ctx}/js/jquery-3.3.1.js"></script>
+    <script type="text/javascript" src="${ctx}/js/md5.js"></script>
     <script type="text/javascript" src="${ctx}/js/bootstrap.js"></script>
     <script type="text/javascript" src="${ctx}/js/user-config.js"></script>
 
@@ -32,13 +33,13 @@
         <div class="panel-body">
 
             <!-- login form start -->
-            <form class="form-horizontal" action="${ctx}/registNewUser" method="post" enctype="multipart/form-data">
+            <form class="form-horizontal" action="${ctx}/registNewUser" method="post" enctype="multipart/form-data" onsubmit="return checkForm()">
 
                 <div class="form-group">
                     <label for="username" class="control-label col-xs-3">用户名:</label>
                     <div class="col-xs-6">
                         <input type="text" class="form-control " id="username" name="username" placeholder="请输入用户名"
-                               onblur="checkUsername()">
+                               onblur="checkUsername();checkUsernameExists();">
                     </div>
                     <div class="col-xs-3 form-group-info" id="username-form-info">
                     </div>
@@ -49,7 +50,7 @@
                     <label for="password" class="control-label col-xs-3">密码:</label>
                     <div class="col-xs-6">
                         <input type="password" class="form-control " id="password" name="password" placeholder="请输入密码 (6-20个字符)"
-                               onblur="checkPassword()">
+                               onblur="checkPassword();checkRepassword();">
                     </div>
                     <div class="col-xs-3 form-group-info" id="password-form-info">
                     </div>
@@ -102,7 +103,7 @@
                     </div>
                     <label for="portrait" class="control-label col-xs-1">（不选即使用默认）头像:</label>
                     <div class="col-xs-2">
-                        <input type="file" class="form-control " id="portrait" name="portrait" />
+                        <input type="file" class="form-control " id="portrait" name="portrait" onchange="refreshPortraitPreview()"/>
                     </div>
                     <label for="portrait-preview" class="control-label col-xs-2">头像预览:</label>
 

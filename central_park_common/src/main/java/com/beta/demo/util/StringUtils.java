@@ -1,5 +1,7 @@
 package com.beta.demo.util;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.UUID;
 
 public class StringUtils {

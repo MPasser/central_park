@@ -2,6 +2,7 @@ package com.beta.demo.controller;
 
 import com.beta.demo.constant.UserConstant;
 import com.beta.demo.dto.UserDto;
+import com.beta.demo.exception.UserAlreadyExists;
 import com.beta.demo.service.UserService;
 import com.beta.demo.vo.UserVo;
 import org.apache.commons.fileupload.FileUploadException;
@@ -35,8 +36,6 @@ public class UserController {
     @RequestMapping(path = "/registNewUser")
     public ModelAndView userRegist(@ModelAttribute UserVo userVo, HttpSession session) {
 
-        // TODO : 注册失败时可设置返回一个单独的页面
-
         ModelAndView mav = new ModelAndView();
         String uploadPath = session.getServletContext().getRealPath(UserConstant.PORTRAIT_UPLOAD_PATH);
 
@@ -45,18 +44,19 @@ public class UserController {
         Pattern pattern = Pattern.compile("[\\w]{2,15}");
         Matcher matcher = pattern.matcher(userVo.getUsername());
         if (!matcher.matches()) {
-            // mav.addObject("message", "用户名不符合规则");
-            mav.setViewName("register");
+            mav.addObject("message", "用户名不符合规则");
+            mav.setViewName("register-fail");
             return mav;
         }
 
-        pattern = Pattern.compile("[\\w]{6,20}");
-        matcher = pattern.matcher(userVo.getPassword());
-        if (!matcher.matches()) {
-            // mav.addObject("message", "密码不符合规则");
-            mav.setViewName("register");
-            return mav;
-        }
+
+        // pattern = Pattern.compile("[\\w]{6,20}");
+        // matcher = pattern.matcher(userVo.getPassword());
+        // if (!matcher.matches()) {
+        //     mav.addObject("message", "密码不符合规则");
+        //     mav.setViewName("register-fail");
+        //     return mav;
+        // }
 
         if ("".equals(userVo.getEmail()) || null == userVo.getEmail()) {
             userVo.setEmail(null);
@@ -64,8 +64,8 @@ public class UserController {
             pattern = Pattern.compile("[\\da-z]+([\\-\\.\\_]?[\\da-z]+)*@[\\da-z]+([\\-\\.]?[\\da-z]+)*(\\.[a-z]{2,})+");
             matcher = pattern.matcher(userVo.getEmail());
             if (!matcher.matches()) {
-                // mav.addObject("message", "邮箱不符合规则");
-                mav.setViewName("register");
+                mav.addObject("message", "邮箱不符合规则");
+                mav.setViewName("register-fail");
                 return mav;
             }
         }
@@ -105,8 +105,8 @@ public class UserController {
             try {
                 userDto.setPortraitInputStream(userVo.getPortrait().getInputStream());
             } catch (IOException e) {
-                // mav.addObject("message", "头像文件上传失败" + e.getMessage());
-                mav.setViewName("register");
+                mav.addObject("message", "头像文件上传失败" + e.getMessage());
+                mav.setViewName("register-fail");
                 return mav;
             }
             userDto.setPortraitFilename(userVo.getPortrait().getOriginalFilename());
@@ -116,8 +116,10 @@ public class UserController {
 
         try {
             userService.add(userDto);
-        } catch (FileUploadException e) {
-            mav.setViewName("register");
+        } catch (FileUploadException | UserAlreadyExists e) {
+            mav.addObject("message", e.getMessage());
+            mav.setViewName("register-fail");
+            return mav;
         }
 
         // mav.addObject("message", "注册成功");

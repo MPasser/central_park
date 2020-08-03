@@ -1,6 +1,7 @@
 package com.beta.demo.service;
 
 import com.beta.demo.dto.UserDto;
+import com.beta.demo.exception.UserAlreadyExists;
 import com.beta.demo.pojo.User;
 import org.apache.commons.fileupload.FileUploadException;
 
@@ -38,7 +39,7 @@ public interface UserService {
      *
      * @param userDto
      */
-    void add(UserDto userDto) throws FileUploadException;
+    void add(UserDto userDto) throws FileUploadException, UserAlreadyExists;
 
 
     /**

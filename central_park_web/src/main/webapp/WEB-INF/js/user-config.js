@@ -1,14 +1,12 @@
-/**
- * login.jsp jump to register.jsp start
- */
+//login.jsp jump to register.jsp
 function jumpToRegister() {
-    window.location="register";
+    window.location = "register";
 }
 
-/**
- * login.jsp jump to register.jsp end
- */
-
+//refresh portrait preview
+function refreshPortraitPreview() {
+    $('#portrait-preview').attr('src', window.URL.createObjectURL($('#portrait')[0].files[0]));
+}
 
 
 /**
@@ -33,26 +31,33 @@ function checkUsername() {
         $.post('findUserByName',
             {'username': username},
             function (data) {
-            console.log(data);
+                console.log(data);
                 if ('usernameIsNull' === data) {
-                    info.text('用户名不可为空');
-                    info.css('color', '#44bb5c');
-                    return true;
+                    info.text('用户名不能为空');
+                    info.css('color', '#dd4822');
                 } else if ('usernameExists' === data) {
                     info.text('用户名已存在');
                     info.css('color', '#dd4822');
-                    return false;
                 } else if ('usernameNotExists' === data) {
                     info.text('用户名可用');
                     info.css('color', '#44bb5c');
-                    return true;
                 } else {
                     console.log('ajax接收的数据异常');
                 }
             }
         );
+        return true;
+    }
+}
 
-
+// check if username exists
+// FIXME : 由于$.post()方法没有返回值，其中的function是回调函数，故无法在调用的时候就返回结果，只能转而判断info
+function checkUsernameExists() {
+    let info = $('#username-form-info');
+    if (info.text() === "用户名已存在") {
+        return false;
+    } else {
+        return true;
     }
 }
 
@@ -86,7 +91,7 @@ function checkRepassword() {
     let info = $('#repassword-form-info');
 
     if (null == repassword || "" === repassword) {
-        info.text('请输入密码');
+        info.text('请重复密码');
         info.css('color', '#dd4822');
         return false;
     } else if (password !== repassword) {
@@ -119,6 +124,48 @@ function checkEmail() {
         return true;
     }
 }
+
+// encode password
+function encodePassword() {
+    let password = $('#password').val();
+    $('#password').val(md5(password));
+    $('#repassword').val(md5(password));
+}
+
+// checkAgain
+function checkForm() {
+    let flag = true;
+
+    // FIXME : 这里使用逻辑表达式flag赋值无法得到预期的结果
+
+    if (!checkUsername()) {
+        alert(checkUsername());
+        console.log("username invalid");
+        flag = false;
+    }
+    if (!checkPassword()) {
+        alert(checkPassword());
+        console.log("password invalid");
+        flag = false;
+    }
+    if (!checkRepassword()) {
+        console.log("repassword invalid");
+        flag = false;
+    }
+    if (!checkEmail()) {
+        console.log("email invalid");
+        flag = false;
+    }
+
+    // flag = checkUsername() && checkPassword() && checkRepassword() && checkEmail();
+    alert(flag);
+
+    if (flag) {
+        encodePassword();
+    }
+    return flag;
+}
+
 /**
  * register form validation functions end
  */

@@ -2,6 +2,7 @@ package com.beta.demo.service.impl;
 
 import com.beta.demo.dao.UserDao;
 import com.beta.demo.dto.UserDto;
+import com.beta.demo.exception.UserAlreadyExists;
 import com.beta.demo.pojo.User;
 import com.beta.demo.service.UserService;
 import com.beta.demo.util.StringUtils;
@@ -49,18 +50,31 @@ public class UserServiceImpl implements UserService {
         return user;
     }
 
+
+    /**
+     * 添加新用户
+     *
+     * @param userDto
+     * @throws FileUploadException
+     */
     @Override
-    public void add(UserDto userDto) throws FileUploadException {
+    public void add(UserDto userDto) throws FileUploadException, UserAlreadyExists {
+        // TODO : remove debug
         System.out.println(userDto);
+
+        if (null != userDao.selectByUsername(userDto.getUsername())) {
+            throw new UserAlreadyExists("用户名" + userDto + "已存在");
+        }
+
 
         // upload the portrait file
         String filename = StringUtils.renameFilename(userDto.getPortraitFilename());
         String filepath = userDto.getPortraitUploadPath() + File.separator + filename;
 
         try {
-            StreamUtils.copy(userDto.getPortraitInputStream(),new FileOutputStream(filepath));
+            StreamUtils.copy(userDto.getPortraitInputStream(), new FileOutputStream(filepath));
         } catch (IOException e) {
-            throw new FileUploadException("文件上传异常："+ e.getMessage());
+            throw new FileUploadException("文件上传异常：" + e.getMessage());
         }
 
         // insert the user
