@@ -1,9 +1,17 @@
 @charset "UTF-8";
 
-#portrait-preview{
+#portrait-preview {
     float: left;
     width: 94px;
     height: auto;
+}
+
+.form-group-info {
+    text-align: left;
+}
+
+.main-container {
+    margin-top: 100px;
 }
 
 footer {
@@ -11,11 +19,4 @@ footer {
     text-align: center;
 }
 
-.main-container{
-    margin-top: 100px;
-}
-
-.form-group-info {
-    text-align: left;
-}
 

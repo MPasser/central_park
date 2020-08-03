@@ -1,0 +1,59 @@
+
+.chatroom-container {
+    margin-top: 30px;
+    padding: 0px;
+}
+
+.message-info-container{
+    height: 500px;
+    border-left: 0px;
+}
+
+.message-info-container-body{
+    padding: 15px 0;
+}
+
+.message-info-container-heading{
+    margin-top: 5px;
+}
+
+.message-item {
+    background-color: #d9edf7;
+    border: 1px solid #bce8f1;
+    border-radius: 5px;
+    padding: 5px 5px;
+    margin: 2px 0;
+}
+
+.textarea-container-toolbar{
+    margin-bottom: 5px;
+}
+
+.user-info-container{
+    height: 500px;
+}
+
+.user-info-item{
+    height: 30px;
+    margin-top: 15px;
+    border: 1px solid #bce8f1;
+    border-radius: 5px;
+}
+
+.user-info-item img {
+    height: 30px;
+    width: auto;
+    float: left;
+}
+.user-info-item p{
+    margin: 0px;
+}
+
+.user-info-container-heading{
+    margin: 15px 0;
+}
+
+footer {
+    font-size: smaller;
+    text-align: center;
+}
