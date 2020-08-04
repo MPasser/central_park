@@ -1,7 +1,8 @@
 package com.beta.demo.service;
 
 import com.beta.demo.dto.UserDto;
-import com.beta.demo.exception.UserAlreadyExists;
+import com.beta.demo.exception.UserRegisterException;
+import com.beta.demo.exception.UserLoginException;
 import com.beta.demo.pojo.User;
 import org.apache.commons.fileupload.FileUploadException;
 
@@ -33,13 +34,23 @@ public interface UserService {
      */
     User findByUsername(String username);
 
+    /**
+     * select user by username and password
+     * @param username
+     * @param password
+     * @return
+     * @throws UserLoginException
+     */
+    User login(String username, String password) throws UserLoginException;
+
 
     /**
-     * insert user
-     *
+     * add user
      * @param userDto
+     * @throws FileUploadException
+     * @throws UserRegisterException
      */
-    void add(UserDto userDto) throws FileUploadException, UserAlreadyExists;
+    void register(UserDto userDto) throws FileUploadException, UserRegisterException;
 
 
     /**
@@ -56,4 +67,12 @@ public interface UserService {
      * @param user
      */
     void modify(User user);
+
+
+    /**
+     * 修改用户的在线状态
+     * @param id
+     * @param onlineStatus
+     */
+    void modifyOnlineStatus(String id, int onlineStatus);
 }

@@ -3,6 +3,11 @@ function jumpToRegister() {
     window.location = "register";
 }
 
+// jump to home page
+function jumpToHomePage() {
+    window.location = "/";
+}
+
 //refresh portrait preview
 function refreshPortraitPreview() {
     $('#portrait-preview').attr('src', window.URL.createObjectURL($('#portrait')[0].files[0]));
@@ -28,7 +33,7 @@ function checkUsername() {
         info.css('color', '#dd4822');
         return false;
     } else {
-        $.post('findUserByName',
+        $.post('findIfUserExists',
             {'username': username},
             function (data) {
                 console.log(data);
@@ -80,8 +85,6 @@ function checkPassword() {
         info.css('color', '#44bb5c');
         return true;
     }
-
-
 }
 
 // validate repassword
@@ -136,7 +139,7 @@ function encodePassword() {
 function checkForm() {
     let flag = true;
 
-    // FIXME : 这里使用逻辑表达式flag赋值无法得到预期的结果
+    // FIXME : 这里使用逻辑表达式flag赋值无法得到预期的结果,有undefined值出现；我服了，下面的checkLoginForm()方法都可以
 
     if (!checkUsername()) {
         alert(checkUsername());
@@ -158,7 +161,7 @@ function checkForm() {
     }
 
     // flag = checkUsername() && checkPassword() && checkRepassword() && checkEmail();
-    alert(flag);
+    // alert(flag);
 
     if (flag) {
         encodePassword();
@@ -168,4 +171,58 @@ function checkForm() {
 
 /**
  * register form validation functions end
+ */
+
+
+
+
+
+/**
+ * login form validation start
+ */
+//
+function checkLoginUsername() {
+    let username = $('#username').val();
+    let info = $('#username-form-info');
+    let reg = /^[\w]{2,15}$/;
+
+    if (null == username || "" === username) {
+        info.text('请输入用户名');
+        info.css('color', '#dd4822');
+        return false;
+    } else if (!reg.test(username)) {
+        info.text('用户名要求2-15位字符，且只含有数字、字母、下划线');
+        info.css('color', '#dd4822');
+        return false;
+    } else {
+        info.text('');
+        return true;
+    }
+}
+
+function checkLoginPassword() {
+    let password = $('#password').val();
+    let info = $('#password-form-info');
+    if (null == password || "" === password) {
+        info.text('请输入密码');
+        info.css('color', '#dd4822');
+        return false;
+    } else{
+        info.text('');
+        return true;
+    }
+}
+function checkLoginForm() {
+
+    let flag;
+
+    flag = checkLoginUsername() && checkLoginPassword();
+
+    if (flag){
+        encodePassword();
+    }
+    return flag;
+}
+/**
+ * login form validation end
  */

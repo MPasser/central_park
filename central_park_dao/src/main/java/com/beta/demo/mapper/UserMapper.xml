@@ -31,7 +31,7 @@
         from t_user
     </select>
 
-    <select id="selectById" parameterType="Integer" resultMap="full_fields_map">
+    <select id="selectById" parameterType="String" resultMap="full_fields_map">
         select id,
                username,
                password,
@@ -63,7 +63,7 @@
         VALUES (#{id}, #{username}, #{password}, #{onlineState}, #{portrait}, #{registerDate}, #{gender}, #{email})
     </insert>
 
-    <delete id="deleteById" parameterType="Integer">
+    <delete id="deleteById" parameterType="String">
         delete
         from t_user
         where id = #{id}
@@ -77,6 +77,12 @@
             portrait     = #{portrait},
             gender       = #{gender},
             email        = #{email}
+        where id = #{id}
+    </update>
+
+    <update id="updateOnlineStatus">
+        update t_user
+        set online_state = #{onlineStatus}
         where id = #{id}
     </update>
 

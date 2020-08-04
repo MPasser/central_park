@@ -26,12 +26,21 @@
     <div class="panel panel-primary col-sm-3 user-info-container">
         <div class="panel-heading user-info-container-heading" >
             <div class="user-info-item">
-                <img src="../images/default-portrait.jpg">
-                <p>username</p>
+                <img src="${user.portrait}">
+                <p>${user.username}</p>
             </div>
 
         </div>
         <div class="panel-body" >
+            <c:forEach items="${otherUsers}" var="otherUser">
+
+                <div class="user-info-item" id="${otherUser.id}">
+                    <img src="${otherUser.portrait}">
+                    <p>username</p>
+                </div>
+
+            </c:forEach>
+
             <div class="user-info-item">
                 <img src="../images/default-portrait.jpg">
                 <p>username</p>

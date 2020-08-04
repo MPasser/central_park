@@ -1,8 +1,10 @@
 package com.beta.demo.service.impl;
 
+import com.beta.demo.constant.UserConstant;
 import com.beta.demo.dao.UserDao;
 import com.beta.demo.dto.UserDto;
-import com.beta.demo.exception.UserAlreadyExists;
+import com.beta.demo.exception.UserRegisterException;
+import com.beta.demo.exception.UserLoginException;
 import com.beta.demo.pojo.User;
 import com.beta.demo.service.UserService;
 import com.beta.demo.util.StringUtils;
@@ -52,18 +54,41 @@ public class UserServiceImpl implements UserService {
 
 
     /**
+     * 用户登录
+     * @param username
+     * @param password
+     * @return
+     * @throws UserLoginException
+     */
+    @Override
+    @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+    public User login(String username, String password) throws UserLoginException {
+        User user = userDao.selectByUsername(username);
+
+        if (null == user){
+            throw new UserLoginException("用户名为空");
+        }else if (password.equals(user.getPassword())){
+            return user;
+        }else {
+            throw new UserLoginException("密码不正确");
+        }
+    }
+
+
+
+    /**
      * 添加新用户
      *
      * @param userDto
      * @throws FileUploadException
      */
     @Override
-    public void add(UserDto userDto) throws FileUploadException, UserAlreadyExists {
+    public void register(UserDto userDto) throws FileUploadException, UserRegisterException {
         // TODO : remove debug
         System.out.println(userDto);
 
         if (null != userDao.selectByUsername(userDto.getUsername())) {
-            throw new UserAlreadyExists("用户名" + userDto + "已存在");
+            throw new UserRegisterException("用户名" + userDto + "已存在");
         }
 
 
@@ -83,7 +108,7 @@ public class UserServiceImpl implements UserService {
         user.setId(userDto.getId());
         user.setUsername(userDto.getUsername());
         user.setPassword(userDto.getPassword());
-        user.setPortrait(filepath);
+        user.setPortrait(UserConstant.PORTRAIT_DOWNLOAD_PATH + File.separator + filename);
         user.setOnlineState(userDto.getOnlineState());
         user.setRegisterDate(userDto.getRegisterDate());
 
@@ -103,4 +128,17 @@ public class UserServiceImpl implements UserService {
     public void modify(User user) {
         // TODO
     }
+
+    @Override
+    public void modifyOnlineStatus(String id, int onlineStatus) {
+        User user = userDao.selectById(id);
+        if (null == user){
+            System.out.println("user 为空！");
+            return; // TODO : 可以改为抛出异常，删除debug
+        }else {
+            userDao.updateOnlineStatus(id, onlineStatus);
+        }
+    }
+
+
 }

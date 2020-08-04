@@ -1,5 +1,7 @@
 package com.beta.demo.constant;
 
+import java.io.File;
+
 public interface UserConstant {
 
     /**
@@ -13,9 +15,11 @@ public interface UserConstant {
     public static final Integer USER_STATE_OFFLINE = 0;
 
 
+    public  static final String PORTRAIT_DOWNLOAD_PATH = File.separator + "upload" + File.separator + "portrait";
     /**
      * constant of
      * portrait file upload path
      */
-    public static final String PORTRAIT_UPLOAD_PATH = "/WEB-INF/upload/portrait";
+    public static final String PORTRAIT_UPLOAD_PATH = File.separator + "WEB-INF" + UserConstant.PORTRAIT_DOWNLOAD_PATH;
+
 }
