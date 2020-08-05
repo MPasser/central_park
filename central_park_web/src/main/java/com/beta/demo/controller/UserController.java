@@ -1,5 +1,6 @@
 package com.beta.demo.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.beta.demo.constant.UserConstant;
 import com.beta.demo.dto.UserDto;
 import com.beta.demo.exception.UserRegisterException;
@@ -174,21 +175,11 @@ public class UserController {
             return mav;
         }
 
-        session.setAttribute("user",user);
-        // sessionListener.sessionLogin(session);
-        // TODO : remove debug
+        // 向自己的session中添加user信息
+        session.setAttribute("uuser",user);
+        String userStr = JSON.toJSONString(user);
+        session.setAttribute("selfUser", userStr);
 
-        Set<User> otherUsers = new HashSet<>();
-
-        List<HttpSession> activeSessions = new UserSessionListener().getActiveSessions();
-        for (HttpSession hs : activeSessions){
-            User u = (User) hs.getAttribute("user");
-            if (null != u){
-                otherUsers.add(u);
-            }
-        }
-
-        session.setAttribute("otherUsers",otherUsers);
         mav.setViewName("chatroom");
         return mav;
     }

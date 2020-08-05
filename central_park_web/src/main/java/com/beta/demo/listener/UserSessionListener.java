@@ -1,26 +1,35 @@
 package com.beta.demo.listener;
 
+import com.beta.demo.pojo.User;
+
 import javax.servlet.annotation.WebListener;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
-// @Component
+// FIXME : 等待移除，计划使用websocket存储http session对象
+
 @WebListener
 public class UserSessionListener implements HttpSessionListener {
 
     private static final Map<String, HttpSession> sessions = new HashMap<>();
 
 
-
     public List<HttpSession> getActiveSessions() {
         return new ArrayList<>(sessions.values());
     }
 
+    public Set<User> getActiveUsers() {
+        Set<User> activeUsers = new HashSet<>();
+        for (HttpSession hs : getActiveSessions()) {
+            User u = (User) hs.getAttribute("user");
+            if (null != u) { // session具有user属性，且user的id与自己的id不同
+                activeUsers.add(u);
+            }
+        }
+        return activeUsers;
+    }
 
     // private UserService userService;
     //
@@ -31,30 +40,17 @@ public class UserSessionListener implements HttpSessionListener {
 
     @Override
     public void sessionCreated(HttpSessionEvent se) {
-        System.out.println("sessionCreated 执行了");
         HttpSession session = se.getSession();
         session.setMaxInactiveInterval(30);
         sessions.put(session.getId(), session);
+        System.out.println("sessionCreated 执行了,sessions长度：" + sessions.size());
     }
 
     @Override
     public void sessionDestroyed(HttpSessionEvent se) {
-        System.out.println("sessionDestroyed 执行了");
+        System.out.println("sessionDestroyed 执行了,sessions长度：" + sessions.size());
         HttpSession session = se.getSession();
         sessions.remove(session.getId());
     }
 
-    // public void sessionLogin(HttpSession loginSession) {
-    //     User user = (User) loginSession.getAttribute("user");
-    //     if (null != user) {
-    //         String userId = user.getId();
-    //         // TODO : remove debug
-    //         System.out.println("session user id :" + userId);
-    //         userService.modifyOnlineStatus(userId, UserConstant.USER_STATE_ONLINE);
-    //         System.out.println("userService.modifyOnlineStatus执行了");
-    //     } else {
-    //         System.out.println("user 为空！位置：sessionLogin");
-    //         return; // TODO : 可以抛出异常
-    //     }
-    // }
 }

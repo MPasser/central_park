@@ -8,5 +8,6 @@ TODO.md
 
 # temp file , to test the webpages
 /central_park_web/src/main/webapp/WEB-INF/views/test.html
+/central_park_web/src/main/webapp/WEB-INF/views/test.jsp
 /central_park_web/src/main/webapp/WEB-INF/upload/portrait/
 !/central_park_web/src/main/webapp/WEB-INF/upload/portrait/default-portrait.jpg

@@ -10,7 +10,13 @@
 
 
     <!-- 配置注解驱动 -->
-    <mvc:annotation-driven/>
+    <mvc:annotation-driven>
+        <mvc:message-converters>
+            <bean class="com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter">
+                <property value="application/json;charset=utf-8" name="supportedMediaTypes"/>
+            </bean>
+        </mvc:message-converters>
+    </mvc:annotation-driven>
 
     <!-- 配置扫包 controller -->
     <context:component-scan base-package="com.beta.demo.controller"/>
@@ -36,5 +42,6 @@
 
     <!-- FIXME 用于页面测试，记得删除 -->
     <mvc:view-controller path="/register" view-name="register"/>
+    <mvc:view-controller path="/test" view-name="test"/>
 
 </beans>

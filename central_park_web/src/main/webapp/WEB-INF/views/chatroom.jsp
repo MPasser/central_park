@@ -1,3 +1,4 @@
+<%@ page import="com.alibaba.fastjson.JSON" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%--
   Created by IntelliJ IDEA.
@@ -8,6 +9,7 @@
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <c:set var="ctx" value="${pageContext.request.contextPath}"/>
+<%String selfUser = (String) session.getAttribute("selfUser");%>
 <html>
 <head>
     <title>Central Park - Login</title>
@@ -17,6 +19,102 @@
     <script type="text/javascript" src="${ctx}/js/bootstrap.js"></script>
     <script type="text/javascript" src="${ctx}/js/user-config.js"></script>
 
+    <script type="text/javascript">
+
+        // $(function () {
+        //     initWebSocket();
+        // })
+        //
+        // function initWebSocket(){
+        //     let websocket = null;
+        //     //判断当前浏览器是否支持WebSocket
+        //     if ('WebSocket' in window) {
+        //         websocket = new WebSocket("ws://localhost:8080/chatroomTest");
+        //     }
+        //     else {
+        //         alert('当前浏览器 Not support websocket')
+        //     }
+        // }
+
+        let websocket = null;
+        //判断当前浏览器是否支持WebSocket
+        if ('WebSocket' in window) {
+            websocket = new WebSocket("ws://localhost:8080/chatroomWebSocket");
+        } else {
+            alert('当前浏览器不支持 websocket ，聊天室无法正常工作')
+        }
+
+        //连接发生错误的回调方法
+        websocket.onerror = function () {
+            setMessageInnerHTML("WebSocket连接发生错误");
+        };
+
+        //连接成功建立的回调方法
+        websocket.onopen = function () {
+            setMessageInnerHTML("WebSocket连接成功");
+        }
+
+        //接收到消息的回调方法
+        websocket.onmessage = function (event) {
+            if ("USERINFO=" === event.data.substring(0, 9)) {
+                let otherUsers = JSON.parse(event.data.substring(9));
+                $('#other-users').empty();
+                otherUsers.forEach(showOtherUser);
+            } else {
+                setMessageInnerHTML(event.data);
+            }
+
+        }
+
+        // 将其他用户显示在网页上
+        function showOtherUser(user) {
+            let container = $('#other-users');
+
+            let div = $("<div>");
+            div.attr('id', user.id);
+            div.attr('class', 'user-info-item');
+
+            let img = $('<img>');
+            img.attr('src', user.portrait);
+
+            let p = $('<p>');
+            p.text(user.username);
+
+            div.append(img).append(p);
+            container.append(div);
+
+        }
+
+        // TODO ： 将消息显示在网页上，需要更改
+        function setMessageInnerHTML(message) {
+            document.getElementById('message').innerHTML += message + '<br/>';
+        }
+
+        //连接关闭的回调方法
+        websocket.onclose = function () {
+            setMessageInnerHTML("WebSocket连接关闭");
+        }
+
+        //监听窗口关闭事件，当窗口关闭时，主动去关闭websocket连接，防止连接还没断开就关闭窗口，server端会抛异常。
+        window.onbeforeunload = function () {
+            closeWebSocket();
+        }
+
+        //关闭WebSocket连接
+        function closeWebSocket() {
+            websocket.close();
+        }
+
+        //发送消息 FIXME : 这里取不到selfUser这个String，显示的总是[object Object]
+        function send() {
+            let message = $('#messageTextarea').val();
+            let selfUser = <%=selfUser%>.toString();
+            let messageObjString = selfUser + message;
+
+            websocket.send(messageObjString);
+        }
+    </script>
+
 </head>
 <body>
 
@@ -24,31 +122,19 @@
 <div class="container text-center chatroom-container">
     <!-- user info start -->
     <div class="panel panel-primary col-sm-3 user-info-container">
-        <div class="panel-heading user-info-container-heading" >
+        <div class="panel-heading user-info-container-heading">
             <div class="user-info-item">
-                <img src="${user.portrait}">
-                <p>${user.username}</p>
+                <img src="${uuser.portrait}">
+                <p>${uuser.username}</p>
             </div>
 
         </div>
-        <div class="panel-body" >
-            <c:forEach items="${otherUsers}" var="otherUser">
-
-                <div class="user-info-item" id="${otherUser.id}">
-                    <img src="${otherUser.portrait}">
-                    <p>username</p>
-                </div>
-
-            </c:forEach>
-
-            <div class="user-info-item">
-                <img src="../images/default-portrait.jpg">
-                <p>username</p>
-            </div>
-            <div class="user-info-item">
-                <img src="../images/default-portrait.jpg">
-                <p>username</p>
-            </div>
+        <div class="panel-body" id="other-users">
+            <!-- 示例代码 -->
+            <%--            <div class="user-info-item" id='userId'>--%>
+            <%--                <img src="../images/default-portrait.jpg">--%>
+            <%--                <p>username</p>--%>
+            <%--            </div>--%>
         </div>
     </div>
     <!-- user info end -->
@@ -56,20 +142,15 @@
 
     <!-- message info start -->
     <div class="panel panel-primary col-sm-9 message-info-container">
-        <div class="panel-heading message-info-container-heading" >
+        <div class="panel-heading message-info-container-heading">
             <h3>中央公园聊天室</h3>
         </div>
 
 
-        <div class="panel-body text-left message-info-container-body" >
-            <div class="panel-body message-item">
-                <p>kjasdkjhadfskjhasdfkjl</p>
-            </div>
-            <div class="panel-body message-item">
-                <p>kjasdkjhadfskjhasdfkjl</p>
-            </div>
-            <div class="panel-body message-item">
-                <p>kjasdkjhadfskjhasdfkjl</p>
+        <div class="panel-body text-left message-info-container-body">
+            <div class="panel-body message-item" id="messageId">
+                <p id="message">消息</p>
+                <p>message content</p>
             </div>
         </div>
 
@@ -86,18 +167,16 @@
         <a>消息记录</a>
     </div>
     <div>
-        <form class="form-horizontal">
-            <div class="form-group">
-                <textarea class="form-control"></textarea>
-            </div>
-            <div class="form-group">
-                <button class="btn btn-primary pull-right" type="submit">发&nbsp;&nbsp;送</button>
-            </div>
-        </form>
+        <%--        <form class="form-horizontal">--%>
+        <div class="col-xs-12">
+            <textarea id="messageTextarea" class="form-control"></textarea>
+        </div>
+        <div class="form-group">
+            <button class="btn btn-primary pull-right" type="button" onclick="send()">发&nbsp;&nbsp;送</button>
+        </div>
+        <%--        </form>--%>
     </div>
 </div>
-
-
 
 
 <!-- footer container start -->
