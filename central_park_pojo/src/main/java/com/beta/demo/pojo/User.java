@@ -8,7 +8,6 @@ public class User implements Serializable {
     private String username;
     private String password;
     private String portrait;
-    private Integer onlineState;
     private Date registerDate;
 
     private boolean gender; // true means male , false means female
@@ -45,14 +44,6 @@ public class User implements Serializable {
 
     public void setPortrait(String portrait) {
         this.portrait = portrait;
-    }
-
-    public Integer getOnlineState() {
-        return onlineState;
-    }
-
-    public void setOnlineState(Integer onlineState) {
-        this.onlineState = onlineState;
     }
 
     public Date getRegisterDate() {

@@ -11,8 +11,7 @@
         <result property="password" column="password"/>
         <result property="portrait" column="portrait"/>
 
-        <result property="registerDate" column="regist_date"/>
-        <result property="onlineState" column="online_state"/>
+        <result property="registerDate" column="register_date"/>
 
         <result property="gender" column="gender"/>
         <result property="email" column="email"/>
@@ -24,8 +23,7 @@
                username,
                password,
                portrait,
-               regist_date,
-               online_state,
+               register_date,
                gender,
                email
         from t_user
@@ -36,8 +34,7 @@
                username,
                password,
                portrait,
-               regist_date,
-               online_state,
+               register_date,
                gender,
                email
         from t_user
@@ -49,8 +46,7 @@
                username,
                password,
                portrait,
-               regist_date,
-               online_state,
+               register_date,
                gender,
                email
         from t_user
@@ -59,8 +55,8 @@
 
 
     <insert id="insert" parameterType="User">
-        insert into t_user (id, username, password, online_state, portrait, regist_date, gender, email)
-        VALUES (#{id}, #{username}, #{password}, #{onlineState}, #{portrait}, #{registerDate}, #{gender}, #{email})
+        insert into t_user (id, username, password, portrait, register_date, gender, email)
+        VALUES (#{id}, #{username}, #{password}, #{portrait}, #{registerDate}, #{gender}, #{email})
     </insert>
 
     <delete id="deleteById" parameterType="String">
@@ -73,16 +69,9 @@
         update t_user
         set username     = #{username},
             password     = #{password},
-            online_state = #{onlineState},
             portrait     = #{portrait},
             gender       = #{gender},
             email        = #{email}
-        where id = #{id}
-    </update>
-
-    <update id="updateOnlineStatus">
-        update t_user
-        set online_state = #{onlineStatus}
         where id = #{id}
     </update>
 

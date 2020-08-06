@@ -10,7 +10,50 @@ function jumpToHomePage() {
 
 //refresh portrait preview
 function refreshPortraitPreview() {
-    $('#portrait-preview').attr('src', window.URL.createObjectURL($('#portrait')[0].files[0]));
+    let portraitFile = $('#portrait')[0].files[0];
+
+    console.log("执行refreshPortraitPreview()");
+    console.log("文件大小：" + portraitFile.size);
+
+    if (portraitFile.size > 1024*3072){
+        alert("图片大小不能够超过3M");
+        $('#portrait').val('');
+        return false;
+    }
+
+    let filename = portraitFile.name;
+    let dotIndex = filename.lastIndexOf(".");
+
+    console.log("dotIndex：" + dotIndex);
+
+
+    if (dotIndex === filename.length - 1){
+        alert("图片格式不支持，支持的格式有[\"bmp\",\"gif\",\"jpeg\",\"jpg\",\"png\",\"psd\",\"webp\"]");
+        $('#portrait').val('');
+        return false;
+    }
+    let fileSuffixName = portraitFile.name.substring(dotIndex + 1).toLowerCase();
+    console.log("文件后缀名：" + fileSuffixName);
+
+
+    let fileFormats = ["bmp","gif","jpeg","jpg","png","psd","webp"];
+    let flag = false;
+    fileFormats.forEach(function (format,index) {
+        if (format === fileSuffixName){
+            flag = true;
+        }
+        console.log("index:" + index +",format:" + format + ",flag:" + flag);
+    });
+
+    if (flag){
+        $('#portrait-preview').attr('src', window.URL.createObjectURL(portraitFile));
+    }else {
+        alert("图片格式不支持，支持的格式有[\"bmp\",\"gif\",\"jpeg\",\"jpg\",\"png\",\"psd\",\"webp\"]");
+        $('#portrait').val('');
+        return false;
+    }
+
+
 }
 
 

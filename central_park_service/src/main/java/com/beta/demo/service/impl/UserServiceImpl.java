@@ -109,7 +109,6 @@ public class UserServiceImpl implements UserService {
         user.setUsername(userDto.getUsername());
         user.setPassword(userDto.getPassword());
         user.setPortrait(UserConstant.PORTRAIT_DOWNLOAD_PATH + File.separator + filename);
-        user.setOnlineState(userDto.getOnlineState());
         user.setRegisterDate(userDto.getRegisterDate());
 
         user.setEmail(userDto.getEmail());
@@ -128,17 +127,5 @@ public class UserServiceImpl implements UserService {
     public void modify(User user) {
         // TODO
     }
-
-    @Override
-    public void modifyOnlineStatus(String id, int onlineStatus) {
-        User user = userDao.selectById(id);
-        if (null == user){
-            System.out.println("user 为空！");
-            return; // TODO : 可以改为抛出异常，删除debug
-        }else {
-            userDao.updateOnlineStatus(id, onlineStatus);
-        }
-    }
-
 
 }

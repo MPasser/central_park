@@ -1,11 +1,10 @@
 package com.beta.demo.controller;
 
-import com.alibaba.fastjson.JSON;
 import com.beta.demo.constant.UserConstant;
 import com.beta.demo.dto.UserDto;
-import com.beta.demo.exception.UserRegisterException;
+import com.beta.demo.exception.FileOversizeException;
 import com.beta.demo.exception.UserLoginException;
-import com.beta.demo.listener.UserSessionListener;
+import com.beta.demo.exception.UserRegisterException;
 import com.beta.demo.pojo.User;
 import com.beta.demo.service.UserService;
 import com.beta.demo.vo.UserVo;
@@ -22,7 +21,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.*;
+import java.util.Date;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -54,7 +54,7 @@ public class UserController {
      * @param session
      * @return
      */
-    @RequestMapping(path = "/registNewUser")
+    @RequestMapping(path = "/registerNewUser")
     public ModelAndView registNewUser(@ModelAttribute UserVo userVo, HttpSession session) {
 
         ModelAndView mav = new ModelAndView();
@@ -104,7 +104,6 @@ public class UserController {
         UserDto userDto = new UserDto();
         // get from default
         userDto.setId(UUID.randomUUID().toString());
-        userDto.setOnlineState(UserConstant.USER_STATE_OFFLINE);
         userDto.setRegisterDate(new Date());
         // get from VO
         userDto.setUsername(userVo.getUsername());
@@ -128,8 +127,12 @@ public class UserController {
         } else {
             System.out.println("use upload portrait:");
             try {
+                System.out.println("文件大小：" + userVo.getPortrait().getSize());
+                if (userVo.getPortrait().getSize() > UserConstant.PORTRAIT_MAXIMUM_SIZE){
+                    throw new FileOversizeException("文件内容过大，不应超过3M");
+                }
                 userDto.setPortraitInputStream(userVo.getPortrait().getInputStream());
-            } catch (IOException e) {
+            } catch (IOException | FileOversizeException e) {
                 mav.addObject("failTitle", "注册失败");
                 mav.addObject("message", "头像文件上传失败" + e.getMessage());
                 mav.setViewName("fail-info");
@@ -155,36 +158,31 @@ public class UserController {
     }
 
 
-
     @RequestMapping(path = "/loginUser")
-    public ModelAndView loginUser(@ModelAttribute UserVo userVo,HttpSession session){
+    public ModelAndView loginUser(@ModelAttribute UserVo userVo, HttpSession session) {
         ModelAndView mav = new ModelAndView();
 
         User user = null;
 
-        System.out.println("username:"+ userVo.getUsername());
-        System.out.println("password:"+ userVo.getPassword());
+        System.out.println("username:" + userVo.getUsername());
+        System.out.println("password:" + userVo.getPassword());
 
         try {
             user = userService.login(userVo.getUsername(), userVo.getPassword());
 
         } catch (UserLoginException e) {
-            mav.addObject("failTitle","登录失败");
-            mav.addObject("message",e.getMessage());
+            mav.addObject("failTitle", "登录失败");
+            mav.addObject("message", e.getMessage());
             mav.setViewName("fail-info");
             return mav;
         }
 
         // 向自己的session中添加user信息
-        session.setAttribute("uuser",user);
-        String userStr = JSON.toJSONString(user);
-        session.setAttribute("selfUser", userStr);
+        session.setAttribute("selfUser", user);
 
         mav.setViewName("chatroom");
         return mav;
     }
-
-
 
 
     @RequestMapping(path = "/findIfUserExists")

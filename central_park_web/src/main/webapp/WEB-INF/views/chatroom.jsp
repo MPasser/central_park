@@ -1,4 +1,3 @@
-<%@ page import="com.alibaba.fastjson.JSON" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%--
   Created by IntelliJ IDEA.
@@ -9,7 +8,6 @@
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <c:set var="ctx" value="${pageContext.request.contextPath}"/>
-<%String selfUser = (String) session.getAttribute("selfUser");%>
 <html>
 <head>
     <title>Central Park - Login</title>
@@ -21,21 +19,6 @@
 
     <script type="text/javascript">
 
-        // $(function () {
-        //     initWebSocket();
-        // })
-        //
-        // function initWebSocket(){
-        //     let websocket = null;
-        //     //判断当前浏览器是否支持WebSocket
-        //     if ('WebSocket' in window) {
-        //         websocket = new WebSocket("ws://localhost:8080/chatroomTest");
-        //     }
-        //     else {
-        //         alert('当前浏览器 Not support websocket')
-        //     }
-        // }
-
         let websocket = null;
         //判断当前浏览器是否支持WebSocket
         if ('WebSocket' in window) {
@@ -46,12 +29,12 @@
 
         //连接发生错误的回调方法
         websocket.onerror = function () {
-            setMessageInnerHTML("WebSocket连接发生错误");
+            showMessage("与服务器的连接发生错误", "#e4b9b9");
         };
 
         //连接成功建立的回调方法
         websocket.onopen = function () {
-            setMessageInnerHTML("WebSocket连接成功");
+            showMessage("服务器连接成功", "#67b168");
         }
 
         //接收到消息的回调方法
@@ -61,7 +44,7 @@
                 $('#other-users').empty();
                 otherUsers.forEach(showOtherUser);
             } else {
-                setMessageInnerHTML(event.data);
+                showMessage(event.data);
             }
 
         }
@@ -85,14 +68,29 @@
 
         }
 
-        // TODO ： 将消息显示在网页上，需要更改
-        function setMessageInnerHTML(message) {
-            document.getElementById('message').innerHTML += message + '<br/>';
+        // 将消息显示在网页上，需要更改
+        function showMessage(message, color) {
+            let container = $('#message-body-container');
+
+            let div = $('<div>');
+            div.attr('class', 'panel-body message-item');
+            // div.attr('id','messageId');
+
+            if (color) {
+                div.attr('style', 'background-color :' + color);
+            }
+
+            let p = $('<p>');
+            p.text(message);
+
+            div.append(p);
+
+            container.append(div);
         }
 
         //连接关闭的回调方法
         websocket.onclose = function () {
-            setMessageInnerHTML("WebSocket连接关闭");
+            showMessage("与服务器的连接断开", "#e4b9b9");
         }
 
         //监听窗口关闭事件，当窗口关闭时，主动去关闭websocket连接，防止连接还没断开就关闭窗口，server端会抛异常。
@@ -105,13 +103,25 @@
             websocket.close();
         }
 
-        //发送消息 FIXME : 这里取不到selfUser这个String，显示的总是[object Object]
+        //发送消息
         function send() {
             let message = $('#messageTextarea').val();
-            let selfUser = <%=selfUser%>.toString();
-            let messageObjString = selfUser + message;
+            if (null === message || "" === (message)){
+                return;
+            }
+            websocket.send(message);
+        }
 
-            websocket.send(messageObjString);
+
+        // 发送消息，此处主要是记录到数据库中
+        function sendTextMessage() {
+            let chatTextMessage = $('#messageTextarea').val();
+            $('#messageTextarea').val('');
+            $.post(
+                "/sendTextMessage", {
+                    'chatTextMessage': chatTextMessage
+                }
+            )
         }
     </script>
 
@@ -124,8 +134,8 @@
     <div class="panel panel-primary col-sm-3 user-info-container">
         <div class="panel-heading user-info-container-heading">
             <div class="user-info-item">
-                <img src="${uuser.portrait}">
-                <p>${uuser.username}</p>
+                <img src="${selfUser.portrait}">
+                <p>${selfUser.username}</p>
             </div>
 
         </div>
@@ -147,11 +157,11 @@
         </div>
 
 
-        <div class="panel-body text-left message-info-container-body">
-            <div class="panel-body message-item" id="messageId">
-                <p id="message">消息</p>
-                <p>message content</p>
-            </div>
+        <div class="panel-body text-left message-info-container-body" id="message-body-container">
+            <!-- 示例代码 -->
+            <%--            <div class="panel-body message-item" id="messageId">--%>
+            <%--                <p>message content</p>--%>
+            <%--            </div>--%>
         </div>
 
 
@@ -166,15 +176,16 @@
     <div class="textarea-container-toolbar text-right">
         <a>消息记录</a>
     </div>
+    <br>
     <div>
-        <%--        <form class="form-horizontal">--%>
-        <div class="col-xs-12">
-            <textarea id="messageTextarea" class="form-control"></textarea>
-        </div>
-        <div class="form-group">
-            <button class="btn btn-primary pull-right" type="button" onclick="send()">发&nbsp;&nbsp;送</button>
-        </div>
-        <%--        </form>--%>
+        <form class="form-horizontal" action="">
+            <div class="col-xs-12 form-group">
+                <textarea class="form-control" id="messageTextarea"></textarea>
+            </div>
+            <div class="form-group">
+                <button class="btn btn-primary pull-right" type="button" onclick="send();sendTextMessage();">发&nbsp;&nbsp;送</button>
+            </div>
+        </form>
     </div>
 </div>
 

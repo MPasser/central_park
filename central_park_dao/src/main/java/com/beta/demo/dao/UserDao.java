@@ -1,7 +1,6 @@
 package com.beta.demo.dao;
 
 import com.beta.demo.pojo.User;
-import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -56,6 +55,4 @@ public interface UserDao {
      */
     void update(User user);
 
-
-    void updateOnlineStatus(@Param("id") String id, @Param("onlineStatus") int onlineStatus);
 }

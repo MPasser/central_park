@@ -33,7 +33,7 @@
         <div class="panel-body">
 
             <!-- login form start -->
-            <form class="form-horizontal" action="${ctx}/registNewUser" method="post" enctype="multipart/form-data" onsubmit="return checkForm()">
+            <form class="form-horizontal" action="${ctx}/registerNewUser" method="post" enctype="multipart/form-data" onsubmit="return checkForm()">
 
                 <div class="form-group">
                     <label for="username" class="control-label col-xs-3">用户名:</label>

@@ -13,28 +13,10 @@ public class UserDto {
     private String portraitUploadPath; // 头像的上传路径
 
 
-    private Integer onlineState;
     private Date registerDate;
 
     private boolean gender; // true means male , false means female
     private String email;
-
-
-    @Override
-    public String toString() {
-        return "UserDto{" +
-                "id='" + id + '\'' +
-                ", username='" + username + '\'' +
-                ", password='" + password + '\'' +
-                ", portraitInputStream=" + portraitInputStream +
-                ", portraitFilename='" + portraitFilename + '\'' +
-                ", portraitUploadPath='" + portraitUploadPath + '\'' +
-                ", onlineState=" + onlineState +
-                ", registerDate=" + registerDate +
-                ", gender=" + gender +
-                ", email='" + email + '\'' +
-                '}';
-    }
 
     public String getId() {
         return id;
@@ -82,14 +64,6 @@ public class UserDto {
 
     public void setPortraitUploadPath(String portraitUploadPath) {
         this.portraitUploadPath = portraitUploadPath;
-    }
-
-    public Integer getOnlineState() {
-        return onlineState;
-    }
-
-    public void setOnlineState(Integer onlineState) {
-        this.onlineState = onlineState;
     }
 
     public Date getRegisterDate() {

@@ -68,11 +68,4 @@ public interface UserService {
      */
     void modify(User user);
 
-
-    /**
-     * 修改用户的在线状态
-     * @param id
-     * @param onlineStatus
-     */
-    void modifyOnlineStatus(String id, int onlineStatus);
 }
