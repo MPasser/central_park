@@ -11,4 +11,10 @@ public interface ChatMessageConstant {
     public static final Integer CHAT_MESSAGE_TYPE_TEXT = 0;
     public static final Integer CHAT_MESSAGE_TYPE_PICTURE = 1;
     public static final Integer CHAT_MESSAGE_TYPE_FILE = 2;
+
+    /**
+     * constant of ChatroomWebsocket
+     * to define the max length of messages
+     */
+    public static final Integer CHAT_MESSAGE_MAX_LENGTH = 120;
 }

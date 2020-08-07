@@ -30,10 +30,11 @@ public class ChatMessageController {
         System.out.println("chatTextMessage:" + chatTextMessage);
 
         User user = (User) httpSession.getAttribute("selfUser");
+        ChatroomWebSocket webSocketStatus = (ChatroomWebSocket) httpSession.getAttribute("webSocketStatus");
 
         // check if there is user info in session
         if (null == user){
-            // TODO : 这里可能需要做一些跳转处理，设置返回参数为ModelAndView会不会太浪费？
+            // TODO : 这里可能需要做一些跳转处理
             System.out.println("user is null!");
             return;
         }

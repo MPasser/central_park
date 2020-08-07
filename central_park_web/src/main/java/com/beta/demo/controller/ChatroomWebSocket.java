@@ -2,6 +2,7 @@ package com.beta.demo.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.beta.demo.config.GetHttpSessionConfigurator;
+import com.beta.demo.constant.ChatMessageConstant;
 import com.beta.demo.pojo.User;
 
 import javax.servlet.http.HttpSession;
@@ -17,17 +18,22 @@ public class ChatroomWebSocket {
 
     private Session session;
 
+    private HttpSession httpSession;
     private User user;
 
 
     @OnOpen
     public void onOpen(Session session, EndpointConfig config) {
-        this.session = session;
-        HttpSession hs = (HttpSession) config.getUserProperties().get(HttpSession.class.getName());
-        if (null != hs) {
-            this.user = (User) hs.getAttribute("selfUser");
+
+        HttpSession openHttpSession = (HttpSession) config.getUserProperties().get(HttpSession.class.getName());
+        if (null != openHttpSession) {
+            checkIfAlreadyLogin(openHttpSession);
+
         }
 
+        this.session = session;
+        this.httpSession = openHttpSession;
+        this.user = (User) this.httpSession.getAttribute("selfUser");
         webSockets.add(this);
         activeUsers.add(this.user);
 
@@ -39,7 +45,7 @@ public class ChatroomWebSocket {
             String jsonActiveUsers = JSON.toJSONString(activeUsers);
             try {
                 // FIXME : 这里把用户的密码直接传过去了，虽然是密文，但也不太好，考虑创建新的VO
-                item.session.getBasicRemote().sendText("USERINFO=" + jsonActiveUsers);
+                item.session.getBasicRemote().sendText("USER:" + jsonActiveUsers);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -48,6 +54,44 @@ public class ChatroomWebSocket {
 
 
     }
+
+    /**
+     * 检查
+     * @param hs
+     */
+    private void checkIfAlreadyLogin(HttpSession hs) {
+        User u = (User) hs.getAttribute("selfUser");
+
+        if (null != u){
+            System.out.println("正在检查user:" + u.getUsername() + " 是否登录");
+            System.out.println("userID:" + u.getId());
+
+
+            for (ChatroomWebSocket ws : webSockets){ // 取出所有ws session的http session获取其User id进行比对
+
+                User PrevUser = (User)ws.httpSession.getAttribute("selfUser");
+
+                System.out.println("正在与用户ID " +PrevUser.getId() + "进行比对");
+                if (u.getId().equals(PrevUser.getId())){ // 若比对成功
+                    if (hs.getId().equals(ws.httpSession.getId())){ // 先判断是否为同一个浏览器，若是，则仅关闭websocket
+
+                    }else { // 若不是，则销毁前一个浏览器的http session
+                        ws.httpSession.invalidate();
+                        System.out.println("销毁了该http session");
+                    }
+
+                    try {
+                        ws.session.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    System.out.println("销毁了该websocket session");
+                }
+            }
+
+        }
+    }
+
 
     @OnClose
     public void onClose() {
@@ -61,7 +105,7 @@ public class ChatroomWebSocket {
             String jsonActiveUsers = JSON.toJSONString(activeUsers);
             try {
                 // FIXME : 这里把用户的密码直接传过去了，虽然是密文，但也不太好，考虑创建新的VO
-                item.session.getBasicRemote().sendText("USERINFO=" + jsonActiveUsers);
+                item.session.getBasicRemote().sendText("USER:" + jsonActiveUsers);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -73,9 +117,17 @@ public class ChatroomWebSocket {
     @OnMessage
     public void onMessage(String message, Session session) {
         System.out.println("来自客户端的消息：" + message);
+        if (message.length() > ChatMessageConstant.CHAT_MESSAGE_MAX_LENGTH){
+            try {
+                this.sendMessage("WARNING:消息过长，未发送成功");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
         for (ChatroomWebSocket item : webSockets) {
             try {
-                item.sendMessage(this.user.getUsername() + ":" + message);
+                item.sendMessage("MESSAGE:TEXT:" + this.user.getUsername() + ":" + message);
             } catch (IOException e) {
                 e.printStackTrace();
             }

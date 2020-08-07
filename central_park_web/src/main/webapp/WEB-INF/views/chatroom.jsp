@@ -37,16 +37,32 @@
             showMessage("服务器连接成功", "#67b168");
         }
 
-        //接收到消息的回调方法
+        /**
+         * 接收到消息的回调方法
+         * 消息类型：
+         * - USER:JSON_STRING   用户JSON数据，JSON_STRING为消息主体
+         * - MESSAGE:TYPE:USERNAME:MESSAGE_PAYLOAD    消息数据，TYPE为消息类型，USER为消息发送者，MESSAGE_PAYLOAD为消息主体
+         *  - TYPE=TEXT 文本消息
+         *
+         */
+
+
         websocket.onmessage = function (event) {
-            if ("USERINFO=" === event.data.substring(0, 9)) {
-                let otherUsers = JSON.parse(event.data.substring(9));
+            console.log("onmessage方法接收到的原始数据数据：" + event.data);
+            let data = event.data.split(":");
+            console.log("onmessage方法经过分割的回传数据：" + data);
+
+            if ("USER" === data[0]){
+                let payload = event.data.substring(5);
+                let otherUsers = JSON.parse(payload);
                 $('#other-users').empty();
                 otherUsers.forEach(showOtherUser);
-            } else {
-                showMessage(event.data);
-            }
+            }else if ("MESSAGE" === data[0]){
+                if ("TEXT" === data[1]){
+                    showTextMessage(data[2],data[3]);
+                }
 
+            }
         }
 
         // 将其他用户显示在网页上
@@ -68,7 +84,36 @@
 
         }
 
-        // 将消息显示在网页上，需要更改
+
+        function showTextMessage(username,message) {
+            // |- container
+            //    |- div
+            //        |- p
+            //        |- divPanel
+            //            |- pMsg
+
+            let container = $('#message-body-container');
+            let div = $('<div>');
+            let p = $('<p>');
+
+            p.text(username + "(" + new Date().toLocaleTimeString() + ")");
+
+            let divPanel = $('<div>');
+            divPanel.attr('class', 'panel-body message-item');
+            // div.attr('id','messageId');
+
+            let pMsg = $('<p>');
+            pMsg.html(message);
+
+            divPanel.append(pMsg);
+            div.append(p).append(divPanel);
+            container.append(div);
+
+            container[0].scrollTop = container[0].scrollHeight;
+        }
+
+
+        // 将消息显示在网页上，需要更改，应当修改成提示消息的方法
         function showMessage(message, color) {
             let container = $('#message-body-container');
 
@@ -81,11 +126,13 @@
             }
 
             let p = $('<p>');
-            p.text(message);
+            p.html(message);
 
             div.append(p);
 
             container.append(div);
+
+            container[0].scrollTop = container[0].scrollHeight;
         }
 
         //连接关闭的回调方法
@@ -105,7 +152,16 @@
 
         //发送消息
         function send() {
+
+            if(websocket.readyState != 1){
+                alert("连接已断开，请重新登录");
+            }
+
             let message = $('#messageTextarea').val();
+            console.log("send()中取到的textarea的value：" + message);
+            // 正常显示textarea中的空格与换行符
+            message = message.replace(/\s/g,"&nbsp;").replace(/\n/g,"<br/>");
+            console.log("send()中经过处理后textarea的value：" + message);
             if (null === message || "" === (message)){
                 return;
             }
@@ -139,7 +195,7 @@
             </div>
 
         </div>
-        <div class="panel-body" id="other-users">
+        <div class="panel-body pre-scrollable user-info-container-body" id="other-users">
             <!-- 示例代码 -->
             <%--            <div class="user-info-item" id='userId'>--%>
             <%--                <img src="../images/default-portrait.jpg">--%>
@@ -157,7 +213,7 @@
         </div>
 
 
-        <div class="panel-body text-left message-info-container-body" id="message-body-container">
+        <div class="panel-body text-left pre-scrollable message-info-container-body" id="message-body-container">
             <!-- 示例代码 -->
             <%--            <div class="panel-body message-item" id="messageId">--%>
             <%--                <p>message content</p>--%>
@@ -180,7 +236,7 @@
     <div>
         <form class="form-horizontal" action="">
             <div class="col-xs-12 form-group">
-                <textarea class="form-control" id="messageTextarea"></textarea>
+                <textarea class="form-control" id="messageTextarea" maxlength="120"></textarea>
             </div>
             <div class="form-group">
                 <button class="btn btn-primary pull-right" type="button" onclick="send();sendTextMessage();">发&nbsp;&nbsp;送</button>

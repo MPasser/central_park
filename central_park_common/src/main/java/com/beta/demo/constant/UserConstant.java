@@ -16,5 +16,5 @@ public interface UserConstant {
      * constant of
      * portrait maximum size
      */
-    public static final int PORTRAIT_MAXIMUM_SIZE = 1024*3072;
+    public static final int PORTRAIT_MAX_SIZE = 1024*3072;
 }

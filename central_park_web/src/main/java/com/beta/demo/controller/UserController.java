@@ -128,7 +128,7 @@ public class UserController {
             System.out.println("use upload portrait:");
             try {
                 System.out.println("文件大小：" + userVo.getPortrait().getSize());
-                if (userVo.getPortrait().getSize() > UserConstant.PORTRAIT_MAXIMUM_SIZE){
+                if (userVo.getPortrait().getSize() > UserConstant.PORTRAIT_MAX_SIZE){
                     throw new FileOversizeException("文件内容过大，不应超过3M");
                 }
                 userDto.setPortraitInputStream(userVo.getPortrait().getInputStream());
