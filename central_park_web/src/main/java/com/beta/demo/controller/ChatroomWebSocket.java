@@ -57,25 +57,26 @@ public class ChatroomWebSocket {
 
     /**
      * 检查
+     *
      * @param hs
      */
     private void checkIfAlreadyLogin(HttpSession hs) {
         User u = (User) hs.getAttribute("selfUser");
 
-        if (null != u){
+        if (null != u) {
             System.out.println("正在检查user:" + u.getUsername() + " 是否登录");
             System.out.println("userID:" + u.getId());
 
 
-            for (ChatroomWebSocket ws : webSockets){ // 取出所有ws session的http session获取其User id进行比对
+            for (ChatroomWebSocket ws : webSockets) { // 取出所有ws session的http session获取其User id进行比对
 
-                User PrevUser = (User)ws.httpSession.getAttribute("selfUser");
+                User PrevUser = (User) ws.httpSession.getAttribute("selfUser");
 
-                System.out.println("正在与用户ID " +PrevUser.getId() + "进行比对");
-                if (u.getId().equals(PrevUser.getId())){ // 若比对成功
-                    if (hs.getId().equals(ws.httpSession.getId())){ // 先判断是否为同一个浏览器，若是，则仅关闭websocket
+                System.out.println("正在与用户ID " + PrevUser.getId() + "进行比对");
+                if (u.getId().equals(PrevUser.getId())) { // 若比对成功
+                    if (hs.getId().equals(ws.httpSession.getId())) { // 先判断是否为同一个浏览器，若是，则仅关闭websocket
 
-                    }else { // 若不是，则销毁前一个浏览器的http session
+                    } else { // 若不是，则销毁前一个浏览器的http session
                         ws.httpSession.invalidate();
                         System.out.println("销毁了该http session");
                     }
@@ -117,7 +118,7 @@ public class ChatroomWebSocket {
     @OnMessage
     public void onMessage(String message, Session session) {
         System.out.println("来自客户端的消息：" + message);
-        if (message.length() > ChatMessageConstant.CHAT_MESSAGE_MAX_LENGTH){
+        if (message.length() > ChatMessageConstant.CHAT_MESSAGE_MAX_LENGTH) {
             try {
                 this.sendMessage("WARNING:消息过长，未发送成功");
             } catch (IOException e) {
@@ -125,9 +126,19 @@ public class ChatroomWebSocket {
             }
         }
 
+        //"ECHO:MESSAGE:FILE:" + chatMessageDto.getFileMessageName() + ":" + filepath;
+        if (message.startsWith("ECHO")) {
+            message = message.substring(5) + ":" + this.user.getUsername(); // 去除前缀"ECHO:"
+        } else {
+            message = "MESSAGE:TEXT:" + this.user.getUsername() + ":" + message;
+        }
+
+
         for (ChatroomWebSocket item : webSockets) {
+
+
             try {
-                item.sendMessage("MESSAGE:TEXT:" + this.user.getUsername() + ":" + message);
+                item.sendMessage(message);
             } catch (IOException e) {
                 e.printStackTrace();
             }

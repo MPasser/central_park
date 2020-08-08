@@ -27,7 +27,7 @@ function refreshPortraitPreview() {
     console.log("dotIndex：" + dotIndex);
 
 
-    if (dotIndex === filename.length - 1){
+    if (dotIndex === filename.length - 1 || -1 === dotIndex){
         alert("图片格式不支持，支持的格式有[\"bmp\",\"gif\",\"jpeg\",\"jpg\",\"png\",\"psd\",\"webp\"]");
         $('#portrait').val('');
         return false;

@@ -21,8 +21,8 @@ create table t_chat_message
     user_id         varchar(100) not null,
     sent_time       datetime     not null,
     message_type    int          not null, -- 0表示文本消息，1表示图片文件消息，2表示其他文件消息
-    message_payload varchar(500) not null, -- type为0时payload为消息内容，type为1或2时payload为文件名
-    message_ref     varchar(100),           -- type为0时ref为空，type为1或2时ref为文件地址
+    message_payload varchar(500) not null, -- type为0时payload为消息内容，type为1时payload为文件名
+    message_ref     varchar(100),           -- type为0时ref为空，type为1时ref为文件地址
 
     foreign key (user_id) references t_user(id)
 ) charset = UTF8MB4;

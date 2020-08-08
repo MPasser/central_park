@@ -77,7 +77,7 @@ public class UserServiceImpl implements UserService {
 
 
     /**
-     * 添加新用户
+     * 注册新用户
      *
      * @param userDto
      * @throws FileUploadException
@@ -87,13 +87,14 @@ public class UserServiceImpl implements UserService {
         // TODO : remove debug
         System.out.println(userDto);
 
+        // 检查用户名是否已存在
         if (null != userDao.selectByUsername(userDto.getUsername())) {
             throw new UserRegisterException("用户名" + userDto + "已存在");
         }
 
 
-        // upload the portrait file
-        String filename = StringUtils.renameFilename(userDto.getPortraitFilename());
+        // 上传头像文件
+        String filename = StringUtils.getRandomFilename(userDto.getPortraitFilename());
         String filepath = userDto.getPortraitUploadPath() + File.separator + filename;
 
         try {
@@ -102,7 +103,7 @@ public class UserServiceImpl implements UserService {
             throw new FileUploadException("文件上传异常：" + e.getMessage());
         }
 
-        // insert the user
+        // 将用户信息插入数据库
         User user = new User();
 
         user.setId(userDto.getId());

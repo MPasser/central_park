@@ -32,7 +32,7 @@
         <div class="panel-body">
 
             <!-- login form start -->
-            <form class="form-horizontal" action="${ctx}/loginUser" method="post" onsubmit="return checkLoginForm()">
+            <form class="form-horizontal" action="${ctx}/chatroom" method="post" onsubmit="return checkLoginForm()">
 
                 <div class="form-group">
                     <label for="username" class="control-label col-xs-3">用户名:</label>

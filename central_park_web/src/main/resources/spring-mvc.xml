@@ -20,7 +20,6 @@
 
     <!-- 配置扫包 controller -->
     <context:component-scan base-package="com.beta.demo.controller"/>
-    <context:component-scan base-package="com.beta.demo.listener"/>
 
 
     <!-- 配置Controller的name属性 与实际资源位置 的映射关系 -->
@@ -35,10 +34,14 @@
     <mvc:resources mapping="/js/**" location="/WEB-INF/js/"/>
     <mvc:resources mapping="/images/**" location="/WEB-INF/images/"/>
     <mvc:resources mapping="/upload/portrait/**" location="/WEB-INF/upload/portrait/"/>
+    <mvc:resources mapping="/upload/msgFile/**" location="/WEB-INF/upload/msgFile/"/>
     <mvc:resources mapping="/layer/**" location="/WEB-INF/layer/"/>
 
     <!-- 文件处理器 -->
-    <bean class="org.springframework.web.multipart.commons.CommonsMultipartResolver" id="multipartResolver"/>
+    <bean class="org.springframework.web.multipart.commons.CommonsMultipartResolver" id="multipartResolver">
+        <property name="defaultEncoding" value="UTF-8"/>
+        <property name="maxUploadSize" value="12800000"/>
+    </bean>
 
     <!-- FIXME 用于页面测试，记得删除 -->
     <mvc:view-controller path="/register" view-name="register"/>

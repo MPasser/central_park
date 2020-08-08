@@ -41,8 +41,8 @@
          * 接收到消息的回调方法
          * 消息类型：
          * - USER:JSON_STRING   用户JSON数据，JSON_STRING为消息主体
-         * - MESSAGE:TYPE:USERNAME:MESSAGE_PAYLOAD    消息数据，TYPE为消息类型，USER为消息发送者，MESSAGE_PAYLOAD为消息主体
-         *  - TYPE=TEXT 文本消息
+         * - MESSAGE:TEXT:USERNAME:MESSAGE_PAYLOAD    消息数据，TEXT为文本类型，USER为消息发送者，MESSAGE_PAYLOAD为消息主体
+         * - MESSAGE:FILE:NAME:FILEPATH:USERNAME
          *
          */
 
@@ -52,14 +52,16 @@
             let data = event.data.split(":");
             console.log("onmessage方法经过分割的回传数据：" + data);
 
-            if ("USER" === data[0]){
+            if ("USER" === data[0]) {
                 let payload = event.data.substring(5);
                 let otherUsers = JSON.parse(payload);
                 $('#other-users').empty();
                 otherUsers.forEach(showOtherUser);
-            }else if ("MESSAGE" === data[0]){
-                if ("TEXT" === data[1]){
-                    showTextMessage(data[2],data[3]);
+            } else if ("MESSAGE" === data[0]) {
+                if ("TEXT" === data[1]) {
+                    showTextMessage(data[2], data[3]);
+                }else if ("FILE" === data[1]){
+                    showFileMessage(data[2], data[3],data[4]);
                 }
 
             }
@@ -85,12 +87,12 @@
         }
 
 
-        function showTextMessage(username,message) {
+        function showTextMessage(username, message) {
             // |- container
             //    |- div
-            //        |- p
+            //        |- p // 用户名与时间
             //        |- divPanel
-            //            |- pMsg
+            //            |- pMsg // 文本消息内容
 
             let container = $('#message-body-container');
             let div = $('<div>');
@@ -106,6 +108,39 @@
             pMsg.html(message);
 
             divPanel.append(pMsg);
+            div.append(p).append(divPanel);
+            container.append(div);
+
+            container[0].scrollTop = container[0].scrollHeight;
+        }
+
+        function showFileMessage(filename, filepath, username){
+            // |- container
+            //    |- div
+            //        |- p // 用户名与时间
+            //        |- divPanel
+            //            |- pImg // 文件图片
+            //            |- aMsg // 文件名
+            let container = $('#message-body-container');
+            let div = $('<div>');
+            let p = $('<p>');
+
+            p.text(username + "(" + new Date().toLocaleTimeString() + ")");
+
+            let divPanel = $('<div>');
+            divPanel.attr('class', 'panel-body message-item');
+            // div.attr('id','messageId');
+
+            let pImg = $('<img>');
+            pImg.attr('src',filepath);
+            pImg.attr('style','height:100px;width:auto;')
+
+            let aMsg = $('<a>');
+            aMsg.attr('href',filepath);
+            aMsg.attr('target','_blank');
+            aMsg.html(filename);
+
+            divPanel.append(pImg).append(aMsg);
             div.append(p).append(divPanel);
             container.append(div);
 
@@ -150,19 +185,20 @@
             websocket.close();
         }
 
-        //发送消息
+        //发送消息至websocket
         function send() {
 
-            if(websocket.readyState != 1){
+            if (websocket.readyState !== 1) {
                 alert("连接已断开，请重新登录");
+                jumpToHomePage();
             }
 
             let message = $('#messageTextarea').val();
             console.log("send()中取到的textarea的value：" + message);
             // 正常显示textarea中的空格与换行符
-            message = message.replace(/\s/g,"&nbsp;").replace(/\n/g,"<br/>");
+            message = message.replace(/\s/g, "&nbsp;").replace(/\n/g, "<br/>");
             console.log("send()中经过处理后textarea的value：" + message);
-            if (null === message || "" === (message)){
+            if (null === message || "" === (message)) {
                 return;
             }
             websocket.send(message);
@@ -171,13 +207,56 @@
 
         // 发送消息，此处主要是记录到数据库中
         function sendTextMessage() {
-            let chatTextMessage = $('#messageTextarea').val();
+            let textMessage = $('#messageTextarea').val();
             $('#messageTextarea').val('');
             $.post(
                 "/sendTextMessage", {
-                    'chatTextMessage': chatTextMessage
+                    'textMessage': textMessage
                 }
             )
+        }
+
+
+        // 上传文件至数据库
+        function sendFileMessage() {
+            if (websocket.readyState !== 1) {
+                alert("连接已断开，请重新登录");
+                jumpToHomePage();
+            }
+
+            // let fileMessage = $('fileMessage');
+            let formData = new FormData();
+            formData.append('fileMessage', $('#fileMessage')[0].files[0]);
+            console.log("upload()中取到的formData：" + formData);
+            if (null === $('#fileMessage')[0].value || "" === $('#fileMessage')[0].value) {
+                console.log("文件名为空，返回");
+                return false;
+            }
+
+            $.ajax({
+                url: 'sendFileMessage',
+                type: 'post',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (message) {
+                    console.log("文件上传成功");
+                    if (websocket.readyState !== 1) {
+                        alert("连接已断开，请重新登录");
+                        jumpToHomePage();
+                    }
+                    websocket.send(message);
+
+                    $('#fileMessage').val('');
+                    $('#fileMsgLocation').val('');
+                },
+                error: function (message) {
+                    console.log("文件上传失败");
+                    $('#fileMessage').val('');
+                    $('#fileMsgLocation').val('');
+                }
+            })
+
         }
     </script>
 
@@ -229,15 +308,39 @@
 
 
 <div class="container textarea-container">
-    <div class="textarea-container-toolbar text-right">
-        <a>消息记录</a>
-    </div>
     <br>
     <div>
-        <form class="form-horizontal" action="">
+        <form class="form-horizontal" id="file-message-form" enctype="multipart/form-data">
+            <div class="form-group">
+                <div class="col-sm-4 control-label">选择文件：</div>
+                <div class="col-sm-6">
+                    <div class="input-group">
+                        <input id='fileMsgLocation' class="form-control" onclick="$('#fileMessage').click();">
+                        <label class="input-group-btn">
+                            <input type="button" value="浏览文件" class="btn btn-primary"
+                                   onclick="$('#fileMessage').click();">
+                        </label>
+                        <label class="input-group-btn">
+                            <input type="button" value="上传文件" class="btn btn-warning" onclick="sendFileMessage()">
+                        </label>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        <label class="input-group-btn">
+                            <input type="button" value="消息记录" class="btn btn-info">
+                        </label>
+                    </div>
+                </div>
+                <input type="file" id='fileMessage' name="fileMessage"
+                       onchange="$('#fileMsgLocation').val($('#fileMessage').val());" style="display: none">
+            </div>
+        </form>
+
+
+        <form class="form-horizontal">
+
             <div class="col-xs-12 form-group">
                 <textarea class="form-control" id="messageTextarea" maxlength="120"></textarea>
             </div>
+            <br>
             <div class="form-group">
                 <button class="btn btn-primary pull-right" type="button" onclick="send();sendTextMessage();">发&nbsp;&nbsp;送</button>
             </div>

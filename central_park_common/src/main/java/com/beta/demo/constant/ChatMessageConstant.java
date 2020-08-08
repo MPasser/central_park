@@ -1,5 +1,7 @@
 package com.beta.demo.constant;
 
+import java.io.File;
+
 public interface ChatMessageConstant {
 
     /**
@@ -9,12 +11,19 @@ public interface ChatMessageConstant {
      * 2 means file message
      */
     public static final Integer CHAT_MESSAGE_TYPE_TEXT = 0;
-    public static final Integer CHAT_MESSAGE_TYPE_PICTURE = 1;
-    public static final Integer CHAT_MESSAGE_TYPE_FILE = 2;
+    public static final Integer CHAT_MESSAGE_TYPE_FILE = 1;
 
     /**
      * constant of ChatroomWebsocket
      * to define the max length of messages
      */
     public static final Integer CHAT_MESSAGE_MAX_LENGTH = 120;
+
+
+    /**
+     * constant of
+     * message file upload path and download path
+     */
+    public static final String MSG_FILE_DOWNLOAD_PATH = File.separator + "upload" + File.separator + "msgFile";
+    public static final String MSG_FILE_UPLOAD_PATH = File.separator + "WEB-INF" + MSG_FILE_DOWNLOAD_PATH;
 }

@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -54,7 +55,7 @@ public class UserController {
      * @param session
      * @return
      */
-    @RequestMapping(path = "/registerNewUser")
+    @RequestMapping(path = "/registerNewUser", method = RequestMethod.POST)
     public ModelAndView registNewUser(@ModelAttribute UserVo userVo, HttpSession session) {
 
         ModelAndView mav = new ModelAndView();
@@ -110,8 +111,8 @@ public class UserController {
         userDto.setPassword(userVo.getPassword());
         userDto.setGender(userVo.getGender());
         userDto.setEmail(userVo.getEmail());
-        // process portrait file
 
+        // process portrait file
         if (userVo.getPortrait().isEmpty()) {
             System.out.println("use default portrait:");
             File defaultPortrait = new File(uploadPath + File.separator + "default-portrait.jpg");
@@ -158,7 +159,7 @@ public class UserController {
     }
 
 
-    @RequestMapping(path = "/loginUser")
+    @RequestMapping(path = "/chatroom", method = RequestMethod.POST)
     public ModelAndView loginUser(@ModelAttribute UserVo userVo, HttpSession session) {
         ModelAndView mav = new ModelAndView();
 
@@ -185,7 +186,7 @@ public class UserController {
     }
 
 
-    @RequestMapping(path = "/findIfUserExists")
+    @RequestMapping(path = "/findIfUserExists", method = RequestMethod.POST)
     @ResponseBody
     public String findIfUserExists(String username) {
 
