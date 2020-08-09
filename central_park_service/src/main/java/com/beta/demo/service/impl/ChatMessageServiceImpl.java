@@ -16,6 +16,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
@@ -30,6 +32,7 @@ public class ChatMessageServiceImpl implements ChatMessageService {
 
     /**
      * 添加一条文本消息到数据库
+     *
      * @param chatMessage
      */
     @Override
@@ -39,6 +42,7 @@ public class ChatMessageServiceImpl implements ChatMessageService {
 
     /**
      * 添加一条文件消息到数据库
+     *
      * @param chatMessageDto
      * @return
      */
@@ -47,11 +51,11 @@ public class ChatMessageServiceImpl implements ChatMessageService {
         System.out.println(chatMessageDto);
 
         //上传文件
-        String filename = StringUtils.renameFilename(chatMessageDto.getFileMessageName(),chatMessageDto.getFileMessageUploadPath());
+        String filename = StringUtils.renameFilename(chatMessageDto.getFileMessageName(), chatMessageDto.getFileMessageUploadPath());
         String filepath = chatMessageDto.getFileMessageUploadPath() + File.separator + filename;
         try {
             // FIXME : 理应抛出
-            StreamUtils.copy(chatMessageDto.getFileMessageInputStream(),new FileOutputStream(filepath));
+            StreamUtils.copy(chatMessageDto.getFileMessageInputStream(), new FileOutputStream(filepath));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -70,5 +74,18 @@ public class ChatMessageServiceImpl implements ChatMessageService {
 
         return filename + ":" + chatMessage.getMessageRef();
 
+    }
+
+    @Override
+    public List<ChatMessage> findMsgLog(String scope) {
+        List<ChatMessage> msgLog = new ArrayList<>();
+
+        if (ChatMessageConstant.MSG_LOG_SCOPE_ALL.equals(scope)) {
+            msgLog = chatMessageDao.selectAll();
+        } else if (ChatMessageConstant.CHAT_MESSAGE_TYPE_FILE.equals(scope)) {
+            msgLog = chatMessageDao.selectByMessageType(ChatMessageConstant.CHAT_MESSAGE_TYPE_FILE);
+        }
+
+        return msgLog;
     }
 }

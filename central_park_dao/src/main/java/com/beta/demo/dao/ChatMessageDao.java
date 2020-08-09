@@ -15,6 +15,14 @@ public interface ChatMessageDao {
 
 
     /**
+     * select items of specific type
+     * @param messageType
+     * @return
+     */
+    List<ChatMessage> selectByMessageType(Integer messageType);
+
+
+    /**
      * insert a item into database
      * @param chatMessage
      */

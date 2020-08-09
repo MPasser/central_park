@@ -4,6 +4,7 @@ import com.beta.demo.dto.ChatMessageDto;
 import com.beta.demo.pojo.ChatMessage;
 
 import java.io.FileNotFoundException;
+import java.util.List;
 
 public interface ChatMessageService {
 
@@ -19,5 +20,14 @@ public interface ChatMessageService {
      * @return
      */
     String addFile(ChatMessageDto chatMessageDto) throws FileNotFoundException;
+
+    /**
+     * 查找消息记录
+     * @param scope
+     * @return
+     */
+    List<ChatMessage> findMsgLog(String scope);
+
+
 
 }

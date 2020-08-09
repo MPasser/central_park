@@ -26,4 +26,15 @@ public interface ChatMessageConstant {
      */
     public static final String MSG_FILE_DOWNLOAD_PATH = File.separator + "upload" + File.separator + "msgFile";
     public static final String MSG_FILE_UPLOAD_PATH = File.separator + "WEB-INF" + MSG_FILE_DOWNLOAD_PATH;
+
+
+    /**
+     * constant of
+     * method to find message log
+     * ALL means all messages
+     * FILE means only file messages
+     */
+    public static final String MSG_LOG_SCOPE_ALL = "ALL";
+    public static final String MSG_LOG_SCOPE_FILE = "FILE";
+
 }

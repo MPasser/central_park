@@ -10,9 +10,9 @@
 <c:set var="ctx" value="${pageContext.request.contextPath}"/>
 <html>
 <head>
-    <title>Central Park - Login</title>
+    <title>Central Park - Chatroom</title>
     <link rel="stylesheet" href="${ctx}/css/bootstrap.css">
-    <link rel="stylesheet" type="text/css" href="../css/chatroom-config.css">
+    <link rel="stylesheet" type="text/css" href="${ctx}/css/chatroom-config.css">
     <script type="text/javascript" src="${ctx}/js/jquery-3.3.1.js"></script>
     <script type="text/javascript" src="${ctx}/js/bootstrap.js"></script>
     <script type="text/javascript" src="${ctx}/js/user-config.js"></script>
@@ -60,8 +60,8 @@
             } else if ("MESSAGE" === data[0]) {
                 if ("TEXT" === data[1]) {
                     showTextMessage(data[2], data[3]);
-                }else if ("FILE" === data[1]){
-                    showFileMessage(data[2], data[3],data[4]);
+                } else if ("FILE" === data[1]) {
+                    showFileMessage(data[2], data[3], data[4]);
                 }
 
             }
@@ -114,7 +114,7 @@
             container[0].scrollTop = container[0].scrollHeight;
         }
 
-        function showFileMessage(filename, filepath, username){
+        function showFileMessage(filename, filepath, username) {
             // |- container
             //    |- div
             //        |- p // 用户名与时间
@@ -132,12 +132,12 @@
             // div.attr('id','messageId');
 
             let pImg = $('<img>');
-            pImg.attr('src',filepath);
-            pImg.attr('style','height:100px;width:auto;')
+            pImg.attr('src', filepath);
+            pImg.attr('style', 'height:100px;width:auto;')
 
             let aMsg = $('<a>');
-            aMsg.attr('href',filepath);
-            aMsg.attr('target','_blank');
+            aMsg.attr('href', filepath);
+            aMsg.attr('target', '_blank');
             aMsg.html(filename);
 
             divPanel.append(pImg).append(aMsg);
@@ -258,6 +258,33 @@
             })
 
         }
+
+
+        // 显示聊天记录
+        function showMsgLog() {
+            let form = $('<form>');
+
+            form.attr('action','messageLog');
+            form.attr('target','_blank');
+            form.attr('method','post');
+
+            // let scope = $('<input>');
+            // scope.attr('type','text');
+            // scope.attr('name','scope');
+            // scope.attr('value','all');
+            //
+            // form.append(scope);
+
+            // form.hide();
+
+            console.log('消息记录-提交查看请求');
+
+            form.appendTo('body');
+
+            form.submit();
+
+            // window.open("messageLog","_blank");
+        }
     </script>
 
 </head>
@@ -294,8 +321,22 @@
 
         <div class="panel-body text-left pre-scrollable message-info-container-body" id="message-body-container">
             <!-- 示例代码 -->
-            <%--            <div class="panel-body message-item" id="messageId">--%>
-            <%--                <p>message content</p>--%>
+
+            <!-- 文本消息 -->
+            <%--            <div>--%>
+            <%--                <p>username(time)</p>--%>
+            <%--                <div class="panel-body message-item">--%>
+            <%--                    <p>message</p>--%>
+            <%--                </div>--%>
+            <%--            </div>--%>
+
+            <!-- 文件消息 -->
+            <%--            <div>--%>
+            <%--                <p>username(time)</p>--%>
+            <%--                <div class="panel-body message-item">--%>
+            <%--                    <img src=""/>--%>
+            <%--                    <a>filepath</a>--%>
+            <%--                </div>--%>
             <%--            </div>--%>
         </div>
 
@@ -325,7 +366,7 @@
                         </label>
                         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                         <label class="input-group-btn">
-                            <input type="button" value="消息记录" class="btn btn-info">
+                            <input type="button" value="消息记录" class="btn btn-info" onclick="showMsgLog()">
                         </label>
                     </div>
                 </div>
