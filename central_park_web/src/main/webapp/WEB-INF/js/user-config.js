@@ -15,6 +15,7 @@ function refreshPortraitPreview() {
     console.log("执行refreshPortraitPreview()");
     console.log("文件大小：" + portraitFile.size);
 
+    // 检查文件的大小与格式
     if (portraitFile.size > 1024*3072){
         alert("图片大小不能够超过3M");
         $('#portrait').val('');
@@ -45,6 +46,7 @@ function refreshPortraitPreview() {
         console.log("index:" + index +",format:" + format + ",flag:" + flag);
     });
 
+    // 如果通过了检查，则更新头像预览
     if (flag){
         $('#portrait-preview').attr('src', window.URL.createObjectURL(portraitFile));
     }else {
@@ -108,9 +110,8 @@ function checkUsernameExists() {
 }
 
 // validate password
-function checkPassword() {
-    let password = $('#password').val();
-    let info = $('#password-form-info');
+function checkPassword(value, info) {
+    let password = value;
     let reg = /^[\w]{6,20}$/;
 
     if (null == password || "" === password) {
@@ -187,7 +188,7 @@ function checkForm() {
         console.log("username invalid");
         flag = false;
     }
-    if (!checkPassword()) {
+    if (!checkPassword($('#password').val(),$('#password-form-info'))) {
         alert(checkPassword());
         console.log("password invalid");
         flag = false;
@@ -210,6 +211,10 @@ function checkForm() {
     return flag;
 }
 
+function resetPortrait(oldPortraitSrc) {
+    $('#portrait').val('');
+    $('#portrait-preview').attr('src', oldPortraitSrc);
+}
 /**
  * register form validation functions end
  */
@@ -266,4 +271,13 @@ function checkLoginForm() {
 }
 /**
  * login form validation end
+ */
+
+
+/**
+ * modify form validation start
+ */
+
+/**
+ * modify form validation end
  */

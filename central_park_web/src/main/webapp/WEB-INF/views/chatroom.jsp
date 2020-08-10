@@ -81,18 +81,15 @@
             let p = $('<p>');
             p.text(user.username);
             p.attr('value', user.username);
-            p.attr('onclick', 'checkOtherUser(this);');
+            p.attr('onclick', 'checkUserInfo(this);');
 
             div.append(img).append(p);
             container.append(div);
 
         }
 
-        function checkSelfUser() {
 
-        }
-
-        function checkOtherUser(pUser) {
+        function checkUserInfo(pUser) {
 
             console.log(pUser);
 
@@ -331,7 +328,7 @@
         <div class="panel-heading user-info-container-heading">
             <div class="user-info-item">
                 <img src="${selfUser.portrait}">
-                <p onclick="checkSelfUser();">${selfUser.username}</p>
+                <p>${selfUser.username}</p>
             </div>
 
         </div>

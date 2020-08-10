@@ -41,6 +41,7 @@ public class UserController {
 
     /**
      * 进行用户的注册
+     *
      * @param userVo  接收表单的数据
      * @param session
      * @return
@@ -72,8 +73,7 @@ public class UserController {
         //     mav.setViewName("register-fail");
         //     return mav;
         // }
-
-        if ("".equals(userVo.getEmail()) || null == userVo.getEmail()) {
+        if (ObjectUtils.isEmpty(userVo.getEmail())) {
             userVo.setEmail(null);
         } else {
             pattern = Pattern.compile("[\\da-z]+([\\-\\.\\_]?[\\da-z]+)*@[\\da-z]+([\\-\\.]?[\\da-z]+)*(\\.[a-z]{2,})+");
@@ -86,8 +86,9 @@ public class UserController {
             }
         }
 
-        if ("".equals(userVo.getGender()) || null == userVo.getEmail()) {
-            userVo.setEmail(null);
+        // 你要绕过js检查搞我，我就默认你是男的
+        if (ObjectUtils.isEmpty(userVo.getGender())) {
+            userVo.setGender(true);
         }
 
 
@@ -119,7 +120,7 @@ public class UserController {
             System.out.println("use upload portrait:");
             try {
                 System.out.println("文件大小：" + userVo.getPortrait().getSize());
-                if (userVo.getPortrait().getSize() > UserConstant.PORTRAIT_MAX_SIZE){
+                if (userVo.getPortrait().getSize() > UserConstant.PORTRAIT_MAX_SIZE) {
                     throw new FileOversizeException("文件内容过大，不应超过3M");
                 }
                 userDto.setPortraitInputStream(userVo.getPortrait().getInputStream());
@@ -151,6 +152,7 @@ public class UserController {
 
     /**
      * 登录用户，跳转到chatroom.jsp中
+     *
      * @param userVo
      * @param session
      * @return
@@ -166,7 +168,6 @@ public class UserController {
 
         try {
             user = userService.login(userVo.getUsername(), userVo.getPassword());
-
         } catch (UserLoginException e) {
             mav.addObject("failTitle", "登录失败");
             mav.addObject("message", e.getMessage());
@@ -191,6 +192,7 @@ public class UserController {
 
     /**
      * 在注册时使用ajax调用，查看用户名是否在数据库中已存在
+     *
      * @param username
      * @return
      */
@@ -212,24 +214,129 @@ public class UserController {
         return result;
     }
 
-    @RequestMapping("/userInfo")
-    public ModelAndView checkOtherUser(String username, HttpSession httpSession){
 
-        System.out.println("checkOtherUser 中 获取的 username值：" + username);
+    /**
+     * 查看其他用户的信息
+     *
+     * @param username
+     * @param httpSession
+     * @return
+     */
+    @RequestMapping("/userInfo")
+    public ModelAndView checkUserInfo(String username, HttpSession httpSession) {
+
+        System.out.println("checkUserInfo 中 获取的 username值：" + username);
 
         ModelAndView mav = new ModelAndView();
 
-        // 这一段也许可以分离出来，做成一个check HttpSession的方法
+
+        // 检查登录状态
         UserLessVo userLessVo = (UserLessVo) httpSession.getAttribute("selfUser");
+        if (ObjectUtils.isEmpty(userLessVo)) { // session中没有用户信息，即用户未登录，不予查看
+            System.out.println("用户名为空!");
+            mav.addObject("failTitle", "查询失败");
+            mav.addObject("message", "用户尚未登录");
+            mav.setViewName("fail-info");
+            return mav;
+        } else {
+            User u = userService.findById(userLessVo.getId());
+            if (ObjectUtils.isEmpty(u)) { // 未找到ID对应的用户
+                System.out.println("用户登录信息有误!");
+                mav.addObject("failTitle", "查询失败");
+                mav.addObject("message", "用户登录信息有误");
+                mav.setViewName("fail-info");
+                return mav;
+            } else { // 找到了ID对应的用户
+                if (username.equals(userLessVo.getUsername())) { // 且此用户ID是自己，则返回修改信息页面
+                    mav.addObject("userInfo", userLessVo);
+                    mav.setViewName("selfUser");
+                    return mav;
+                }
+            }
+        }
+
+        // 查看其他用户信息：将查找出来的User对象转换成UserLessVo
+        User otherUser = userService.findByUsername(username);
+
+        if (ObjectUtils.isEmpty(otherUser)) {
+            mav.addObject("failTitle", "查询失败");
+            mav.addObject("message", "查询参数有误");
+            mav.setViewName("fail-info");
+            return mav;
+        }
+
+        UserLessVo userInfo = new UserLessVo(); // 返回的UserLessVo对象
+
+        userInfo.setId(otherUser.getId());
+        userInfo.setUsername(otherUser.getUsername());
+        userInfo.setPortrait(otherUser.getPortrait());
+        userInfo.setGender(otherUser.isGender());
+        userInfo.setEmail(otherUser.getEmail());
+
+        mav.addObject("userInfo", userInfo);
+        mav.setViewName("otherUser");
+
+        return mav;
+
+    }
+
+
+    @RequestMapping(value = "/modifyInfo", method = RequestMethod.POST)
+    public ModelAndView modifySelfUser(@ModelAttribute UserVo userVo, HttpSession httpSession) {
+
+        ModelAndView mav = new ModelAndView();
+        String uploadPath = httpSession.getServletContext().getRealPath(UserConstant.PORTRAIT_UPLOAD_PATH);
+
+        // validate the form elements
+        Pattern pattern = Pattern.compile("[\\w]{2,15}");
+        Matcher matcher = pattern.matcher(userVo.getUsername());
+        if (!matcher.matches()) {
+            mav.addObject("failTitle", "修改失败");
+            mav.addObject("message", "用户名不符合规则");
+            mav.setViewName("fail-info");
+            return mav;
+        }
+
+        if (ObjectUtils.isEmpty(userVo.getEmail())) {
+            userVo.setEmail(null);
+        } else {
+            pattern = Pattern.compile("[\\da-z]+([\\-\\.\\_]?[\\da-z]+)*@[\\da-z]+([\\-\\.]?[\\da-z]+)*(\\.[a-z]{2,})+");
+            matcher = pattern.matcher(userVo.getEmail());
+            if (!matcher.matches()) {
+                mav.addObject("failTitle", "修改");
+                mav.addObject("message", "邮箱不符合规则");
+                mav.setViewName("fail-info");
+                return mav;
+            }
+        }
+
+        // 你要绕过js检查搞我，我就默认你是男的
+        if (ObjectUtils.isEmpty(userVo.getGender())) {
+            userVo.setGender(true);
+        }
+
+        return null;
+    }
+
+
+    /**
+     * 传入一个UserLessVo，判断是否空和正确性，若未通过检查，返回指定的ModelAndView
+     *
+     * @param userLessVo
+     * @return
+     */
+    private ModelAndView checkHttpSessionUser(UserLessVo userLessVo) {
+        ModelAndView mav = new ModelAndView();
+
         if (ObjectUtils.isEmpty(userLessVo)) {
             System.out.println("用户名为空!");
             mav.addObject("failTitle", "查询失败");
             mav.addObject("message", "用户尚未登录");
             mav.setViewName("fail-info");
             return mav;
-        }else {
+        } else {
             User u = userService.findById(userLessVo.getId());
-            if (ObjectUtils.isEmpty(u)){
+            if (ObjectUtils.isEmpty(u)) {
                 System.out.println("用户登录信息有误!");
                 mav.addObject("failTitle", "查询失败");
                 mav.addObject("message", "用户登录信息有误");
@@ -238,28 +345,6 @@ public class UserController {
             }
         }
 
-        // 将查找出来的User对象转换成UserLessVo
-        User otherUser = userService.findByUsername(username);
-
-        if (ObjectUtils.isEmpty(otherUser)){
-            mav.addObject("failTitle", "查询失败");
-            mav.addObject("message", "查询参数有误");
-            mav.setViewName("fail-info");
-            return mav;
-        }
-
-        UserLessVo otherUserLessVo = new UserLessVo();
-        otherUserLessVo.setId(otherUser.getId());
-        otherUserLessVo.setUsername(otherUser.getUsername());
-        otherUserLessVo.setPortrait(otherUser.getPortrait());
-        otherUserLessVo.setGender(otherUser.isGender());
-        otherUserLessVo.setEmail(otherUser.getEmail());
-
-        mav.addObject("userInfo",otherUserLessVo);
-        mav.setViewName("otherUser");
-
-        return mav;
-
+        return null;
     }
-
 }

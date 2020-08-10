@@ -6,6 +6,14 @@
     height: auto;
 }
 
+div.form-group label.control-label{
+    padding-top: 0;
+}
+
+div.form-group div p{
+    margin: 0;
+}
+
 .form-group-info {
     text-align: left;
 }
