@@ -23,7 +23,7 @@ public interface UserService {
      * @param id
      * @return
      */
-    User findById(int id);
+    User findById(String id);
 
 
     /**

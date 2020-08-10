@@ -7,10 +7,12 @@ import com.beta.demo.exception.UserLoginException;
 import com.beta.demo.exception.UserRegisterException;
 import com.beta.demo.pojo.User;
 import com.beta.demo.service.UserService;
+import com.beta.demo.vo.UserLessVo;
 import com.beta.demo.vo.UserVo;
 import org.apache.commons.fileupload.FileUploadException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -31,26 +33,14 @@ import java.util.regex.Pattern;
 public class UserController {
 
     private UserService userService;
-    // private UserSessionListener sessionListener;
 
     @Autowired
     public UserController(UserService userService) {
         this.userService = userService;
     }
 
-
-    // public UserSessionListener getSessionListener() {
-    //     return sessionListener;
-    // }
-
-    // @Autowired
-    // public void setSessionListener(UserSessionListener sessionListener) {
-    //     this.sessionListener = sessionListener;
-    // }
-
     /**
      * 进行用户的注册
-     *
      * @param userVo  接收表单的数据
      * @param session
      * @return
@@ -159,6 +149,12 @@ public class UserController {
     }
 
 
+    /**
+     * 登录用户，跳转到chatroom.jsp中
+     * @param userVo
+     * @param session
+     * @return
+     */
     @RequestMapping(path = "/chatroom", method = RequestMethod.POST)
     public ModelAndView loginUser(@ModelAttribute UserVo userVo, HttpSession session) {
         ModelAndView mav = new ModelAndView();
@@ -178,14 +174,26 @@ public class UserController {
             return mav;
         }
 
+        UserLessVo userLessVo = new UserLessVo();
+        userLessVo.setId(user.getId());
+        userLessVo.setUsername(user.getUsername());
+        userLessVo.setPortrait(user.getPortrait());
+        userLessVo.setGender(user.isGender());
+        userLessVo.setEmail(user.getEmail());
+
         // 向自己的session中添加user信息
-        session.setAttribute("selfUser", user);
+        session.setAttribute("selfUser", userLessVo);
 
         mav.setViewName("chatroom");
         return mav;
     }
 
 
+    /**
+     * 在注册时使用ajax调用，查看用户名是否在数据库中已存在
+     * @param username
+     * @return
+     */
     @RequestMapping(path = "/findIfUserExists", method = RequestMethod.POST)
     @ResponseBody
     public String findIfUserExists(String username) {
@@ -202,6 +210,56 @@ public class UserController {
         }
 
         return result;
+    }
+
+    @RequestMapping("/userInfo")
+    public ModelAndView checkOtherUser(String username, HttpSession httpSession){
+
+        System.out.println("checkOtherUser 中 获取的 username值：" + username);
+
+        ModelAndView mav = new ModelAndView();
+
+        // 这一段也许可以分离出来，做成一个check HttpSession的方法
+        UserLessVo userLessVo = (UserLessVo) httpSession.getAttribute("selfUser");
+        if (ObjectUtils.isEmpty(userLessVo)) {
+            System.out.println("用户名为空!");
+            mav.addObject("failTitle", "查询失败");
+            mav.addObject("message", "用户尚未登录");
+            mav.setViewName("fail-info");
+            return mav;
+        }else {
+            User u = userService.findById(userLessVo.getId());
+            if (ObjectUtils.isEmpty(u)){
+                System.out.println("用户登录信息有误!");
+                mav.addObject("failTitle", "查询失败");
+                mav.addObject("message", "用户登录信息有误");
+                mav.setViewName("fail-info");
+                return mav;
+            }
+        }
+
+        // 将查找出来的User对象转换成UserLessVo
+        User otherUser = userService.findByUsername(username);
+
+        if (ObjectUtils.isEmpty(otherUser)){
+            mav.addObject("failTitle", "查询失败");
+            mav.addObject("message", "查询参数有误");
+            mav.setViewName("fail-info");
+            return mav;
+        }
+
+        UserLessVo otherUserLessVo = new UserLessVo();
+        otherUserLessVo.setId(otherUser.getId());
+        otherUserLessVo.setUsername(otherUser.getUsername());
+        otherUserLessVo.setPortrait(otherUser.getPortrait());
+        otherUserLessVo.setGender(otherUser.isGender());
+        otherUserLessVo.setEmail(otherUser.getEmail());
+
+        mav.addObject("userInfo",otherUserLessVo);
+        mav.setViewName("otherUser");
+
+        return mav;
+
     }
 
 }

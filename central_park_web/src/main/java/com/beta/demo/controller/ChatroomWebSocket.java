@@ -3,7 +3,7 @@ package com.beta.demo.controller;
 import com.alibaba.fastjson.JSON;
 import com.beta.demo.config.GetHttpSessionConfigurator;
 import com.beta.demo.constant.ChatMessageConstant;
-import com.beta.demo.pojo.User;
+import com.beta.demo.vo.UserLessVo;
 
 import javax.servlet.http.HttpSession;
 import javax.websocket.*;
@@ -14,12 +14,12 @@ import java.util.concurrent.CopyOnWriteArraySet;
 @ServerEndpoint(value = "/chatroomWebSocket", configurator = GetHttpSessionConfigurator.class)
 public class ChatroomWebSocket {
     private static CopyOnWriteArraySet<ChatroomWebSocket> webSockets = new CopyOnWriteArraySet<>();
-    private static CopyOnWriteArraySet<User> activeUsers = new CopyOnWriteArraySet<>();
+    private static CopyOnWriteArraySet<UserLessVo> activeUsers = new CopyOnWriteArraySet<>();
 
     private Session session;
 
     private HttpSession httpSession;
-    private User user;
+    private UserLessVo userLessVo;
 
 
     @OnOpen
@@ -33,9 +33,9 @@ public class ChatroomWebSocket {
 
         this.session = session;
         this.httpSession = openHttpSession;
-        this.user = (User) this.httpSession.getAttribute("selfUser");
+        this.userLessVo = (UserLessVo) this.httpSession.getAttribute("selfUser");
         webSockets.add(this);
-        activeUsers.add(this.user);
+        activeUsers.add(this.userLessVo);
 
 
         System.out.println("有新连接加入！当前在线人数为" + getOnlineCount());
@@ -44,7 +44,6 @@ public class ChatroomWebSocket {
         for (ChatroomWebSocket item : webSockets) {
             String jsonActiveUsers = JSON.toJSONString(activeUsers);
             try {
-                // FIXME : 这里把用户的密码直接传过去了，虽然是密文，但也不太好，考虑创建新的VO
                 item.session.getBasicRemote().sendText("USER:" + jsonActiveUsers);
             } catch (IOException e) {
                 e.printStackTrace();
@@ -61,7 +60,7 @@ public class ChatroomWebSocket {
      * @param hs
      */
     private void checkIfAlreadyLogin(HttpSession hs) {
-        User u = (User) hs.getAttribute("selfUser");
+        UserLessVo u = (UserLessVo) hs.getAttribute("selfUser");
 
         if (null != u) {
             System.out.println("正在检查user:" + u.getUsername() + " 是否登录");
@@ -70,7 +69,7 @@ public class ChatroomWebSocket {
 
             for (ChatroomWebSocket ws : webSockets) { // 取出所有ws session的http session获取其User id进行比对
 
-                User PrevUser = (User) ws.httpSession.getAttribute("selfUser");
+                UserLessVo PrevUser = (UserLessVo) ws.httpSession.getAttribute("selfUser");
 
                 System.out.println("正在与用户ID " + PrevUser.getId() + "进行比对");
                 if (u.getId().equals(PrevUser.getId())) { // 若比对成功
@@ -97,7 +96,7 @@ public class ChatroomWebSocket {
     @OnClose
     public void onClose() {
         webSockets.remove(this);
-        activeUsers.remove(this.user);
+        activeUsers.remove(this.userLessVo);
 
 
         System.out.println("有一连接关闭！当前在线人数为" + getOnlineCount());
@@ -128,9 +127,9 @@ public class ChatroomWebSocket {
 
         //"ECHO:MESSAGE:FILE:" + chatMessageDto.getFileMessageName() + ":" + filepath;
         if (message.startsWith("ECHO")) {
-            message = message.substring(5) + ":" + this.user.getUsername(); // 去除前缀"ECHO:"
+            message = message.substring(5) + ":" + this.userLessVo.getUsername(); // 去除前缀"ECHO:"
         } else {
-            message = "MESSAGE:TEXT:" + this.user.getUsername() + ":" + message;
+            message = "MESSAGE:TEXT:" + this.userLessVo.getUsername() + ":" + message;
         }
 
 

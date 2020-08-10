@@ -6,6 +6,8 @@ import com.beta.demo.dto.ChatMessageDto;
 import com.beta.demo.pojo.ChatMessage;
 import com.beta.demo.pojo.User;
 import com.beta.demo.service.ChatMessageService;
+import com.beta.demo.service.UserService;
+import com.beta.demo.vo.UserLessVo;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +20,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -30,12 +31,21 @@ import java.util.UUID;
 public class ChatMessageController {
 
     private ChatMessageService chatMessageService;
+    private UserService userService;
 
     @Autowired
     public ChatMessageController(ChatMessageService chatMessageService) {
         this.chatMessageService = chatMessageService;
     }
 
+    public UserService getUserService() {
+        return userService;
+    }
+
+    @Autowired
+    public void setUserService(UserService userService) {
+        this.userService = userService;
+    }
 
     /**
      * 将文本消息存入数据库中
@@ -50,10 +60,10 @@ public class ChatMessageController {
 
         System.out.println("textMessage:" + textMessage);
 
-        User user = (User) httpSession.getAttribute("selfUser");
+        UserLessVo userLessVo = (UserLessVo) httpSession.getAttribute("selfUser");
 
         // check if there is user info in session
-        if (null == user) {
+        if (null == userLessVo) {
             // TODO : 这里可能需要做一些跳转处理
             System.out.println("user is null!");
             return "ERROR:用户名为空";
@@ -67,7 +77,13 @@ public class ChatMessageController {
         chatMessage.setMessageType(ChatMessageConstant.CHAT_MESSAGE_TYPE_TEXT);
 
         // get from parameters
-        chatMessage.setUser(user);
+        User u = userService.findById(userLessVo.getId());
+        if (null == u) {
+            // TODO : 这里可能需要做一些跳转处理
+            System.out.println("user is wrong!");
+            return "ERROR:用户信息有误";
+        }
+        chatMessage.setUser(u);
         chatMessage.setMessagePayload(textMessage);
 
 
@@ -83,22 +99,21 @@ public class ChatMessageController {
      * 将文件数据存入数据库中
      *
      * @param fileMessage
-     * @param req
      * @param httpSession
      * @return ECHO:开头的字符串，指示浏览器向websocket发送ECHO:之后的字符串，以请求在页面上显示发送的文件信息
      */
     @RequestMapping(value = "/sendFileMessage", method = RequestMethod.POST)
     @ResponseBody
-    public String sendFileMessage(@RequestParam CommonsMultipartFile fileMessage, HttpServletRequest req, HttpSession httpSession) {
+    public String sendFileMessage(@RequestParam CommonsMultipartFile fileMessage, HttpSession httpSession) {
 
         String uploadPath = httpSession.getServletContext().getRealPath(ChatMessageConstant.MSG_FILE_UPLOAD_PATH);
 
         System.out.println("fileMessage:" + fileMessage);
 
-        User user = (User) httpSession.getAttribute("selfUser");
+        UserLessVo userLessVo = (UserLessVo) httpSession.getAttribute("selfUser");
 
         // check if there is user info in session
-        if (null == user) {
+        if (null == userLessVo) {
             // TODO : 这里可能需要做一些跳转处理
             System.out.println("用户名为空!");
             return "ERROR:用户名为空";
@@ -117,7 +132,13 @@ public class ChatMessageController {
         chatMessageDto.setMessageType(ChatMessageConstant.CHAT_MESSAGE_TYPE_FILE);
 
         // get from parameters
-        chatMessageDto.setUser(user);
+        User u = userService.findById(userLessVo.getId());
+        if (null == u) {
+            // TODO : 这里可能需要做一些跳转处理
+            System.out.println("user is wrong!");
+            return "ERROR:用户信息有误";
+        }
+        chatMessageDto.setUser(u);
 
         // process the file
         try {
@@ -144,7 +165,7 @@ public class ChatMessageController {
 
     @RequestMapping(value = "/messageLog")
     private ModelAndView showMsgLog(String scope, Integer pageNum, HttpSession httpSession) {
-        User user = (User) httpSession.getAttribute("selfUser");
+        UserLessVo userLessVo = (UserLessVo) httpSession.getAttribute("selfUser");
 
         // TODO : 把其他的空值判断都换成这个
         if (ObjectUtils.isEmpty(pageNum)) {
@@ -156,7 +177,7 @@ public class ChatMessageController {
         }
         ModelAndView mav = new ModelAndView();
 
-        if (null == user) {
+        if (null == userLessVo) {
             System.out.println("用户名为空!");
             mav.addObject("failTitle", "查询失败");
             mav.addObject("message", "用户尚未登录");

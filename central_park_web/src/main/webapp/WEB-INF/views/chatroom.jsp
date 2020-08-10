@@ -80,11 +80,49 @@
 
             let p = $('<p>');
             p.text(user.username);
+            p.attr('value', user.username);
+            p.attr('onclick', 'checkOtherUser(this);');
 
             div.append(img).append(p);
             container.append(div);
 
         }
+
+        function checkSelfUser() {
+
+        }
+
+        function checkOtherUser(pUser) {
+
+            console.log(pUser);
+
+
+            console.log(pUser.getAttribute('value'));
+            console.log("pUser");
+
+
+            let form = $('<form>');
+
+            form.attr('action', 'userInfo');
+            form.attr('target', '_blank');
+            form.attr('method', 'get');
+
+            let username = $('<input>');
+            username.attr('type', 'text');
+            username.attr('name', 'username');
+            username.attr('value', pUser.getAttribute('value'));
+
+            form.append(username);
+
+            console.log('其他用户信息-提交查看请求');
+
+            form.appendTo('body');
+            form.hide();
+            form.submit();
+
+        }
+
+
 
 
         function showTextMessage(username, message) {
@@ -264,9 +302,9 @@
         function showMsgLog() {
             let form = $('<form>');
 
-            form.attr('action','messageLog');
-            form.attr('target','_blank');
-            form.attr('method','post');
+            form.attr('action', 'messageLog');
+            form.attr('target', '_blank');
+            form.attr('method', 'post');
 
             // let scope = $('<input>');
             // scope.attr('type','text');
@@ -275,15 +313,11 @@
             //
             // form.append(scope);
 
-            // form.hide();
-
             console.log('消息记录-提交查看请求');
 
             form.appendTo('body');
-
+            form.hide();
             form.submit();
-
-            // window.open("messageLog","_blank");
         }
     </script>
 
@@ -297,7 +331,7 @@
         <div class="panel-heading user-info-container-heading">
             <div class="user-info-item">
                 <img src="${selfUser.portrait}">
-                <p>${selfUser.username}</p>
+                <p onclick="checkSelfUser();">${selfUser.username}</p>
             </div>
 
         </div>

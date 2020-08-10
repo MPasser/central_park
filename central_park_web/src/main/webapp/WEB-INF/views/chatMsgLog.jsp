@@ -45,34 +45,6 @@
                 pageUrl: function (type, page, current) {
                     return "${ctx}/messageLog?pageNum=" + page;
                 }
-                // onPageClicked : function (event, originalEvent, type, page) {
-                //     let form = $('<form>');
-                //
-                //     form.attr('action','messageLog');
-                //     form.attr('target','_blank');
-                //     form.attr('method','post');
-                //
-                //     let pageNum = $('<input>');
-                //     pageNum.attr('type','text');
-                //     pageNum.attr('name','pageNum');
-                //     pageNum.attr('value', page);
-                //     form.append(pageNum);
-                //
-                //     // let scope = $('<input>');
-                //     // scope.attr('type','text');
-                //     // scope.attr('name','scope');
-                //     // scope.attr('value','all');
-                //     //
-                //     // form.append(scope);
-                //     //
-                //     // form.hide();
-                //
-                //     console.log('消息记录-提交查看请求');
-                //
-                //     form.appendTo('body');
-                //
-                //     form.submit();
-                // }
             });
         }
     </script>
