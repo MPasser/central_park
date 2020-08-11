@@ -157,11 +157,11 @@
             </div>
 
             <div class="modal-body">
-                <form class="form-horizontal" id="form-modify-password">
+                <form class="form-horizontal" id="form-modify-password" action="/modifyPassword" onsubmit="return checkModPwdForm();">
                     <div class="form-group">
                         <label for="old-password" class="control-label col-xs-3">旧密码:</label>
                         <div class="col-xs-6">
-                            <input type="password" class="form-control " id="old-password" name="password"
+                            <input type="password" class="form-control " id="old-password" name="oldPassword"
                                    placeholder="请输入旧密码" onblur="checkLoginPassword();">
                         </div>
                         <div class="col-xs-3 form-group-info" id="old-password-form-info">
@@ -191,8 +191,8 @@
 
 
             <div class="modal-footer">
-                <button class="btn btn-danger updateProductType" data-dismiss="modal"
-                        onclick="submitForm($('#form-modify-password'));">
+                <button class="btn btn-danger" data-dismiss="modal"
+                        onclick="submitForm($('#form-modify-password'),'post');">
                     修改
                 </button>
                 <button class="btn btn-primary cancel" data-dismiss="modal">取消</button>
@@ -246,7 +246,7 @@
 
             <div class="modal-footer">
                 <button class="btn btn-danger updateProductType" data-dismiss="modal"
-                        onclick="submitForm($('#form-modify-password'));">
+                        onclick="submitForm($('#form-modify-portrait'));">
                     修改
                 </button>
                 <button class="btn btn-primary cancel" data-dismiss="modal">取消</button>

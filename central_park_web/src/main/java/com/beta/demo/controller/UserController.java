@@ -8,6 +8,7 @@ import com.beta.demo.exception.UserModificationException;
 import com.beta.demo.exception.UserRegisterException;
 import com.beta.demo.pojo.User;
 import com.beta.demo.service.UserService;
+import com.beta.demo.vo.PasswordVo;
 import com.beta.demo.vo.UserLessVo;
 import com.beta.demo.vo.UserVo;
 import org.apache.commons.fileupload.FileUploadException;
@@ -284,21 +285,15 @@ public class UserController {
 
     @RequestMapping(value = "/modifyBasicInfo", method = RequestMethod.POST)
     public ModelAndView modifySelfUser(@ModelAttribute UserVo userVo, HttpSession httpSession) {
-
-        ModelAndView mav = new ModelAndView();
-        String uploadPath = httpSession.getServletContext().getRealPath(UserConstant.PORTRAIT_UPLOAD_PATH);
-
         // userVo 传入的新用户信息
+        ModelAndView mav = new ModelAndView();
 
         // 登录的用户信息
         UserLessVo userLessVo = (UserLessVo) httpSession.getAttribute("selfUser");
         checkHttpSessionUser(userLessVo);
-        String userId = userLessVo.getId();
-
 
         Pattern pattern;
         Matcher matcher;
-
         // 查看用户名是否更改，且赋值给DTO
         String voUsername = userVo.getUsername();
         if (!voUsername.equals(userLessVo.getUsername())) { // 在用户名发生更改的情况下
@@ -367,6 +362,44 @@ public class UserController {
         mav.setViewName("selfUser");
         return mav;
     }
+
+
+
+    @RequestMapping(value = "/modifyPassword", method = RequestMethod.POST)
+    public  ModelAndView modifyPassword(@ModelAttribute PasswordVo passwordVo, HttpSession httpSession){
+        System.out.println("modifyPassword开始执行");
+        // passwordVo 传入的密码信息
+        ModelAndView mav = new ModelAndView();
+
+        // 登录的用户信息
+        UserLessVo userLessVo = (UserLessVo) httpSession.getAttribute("selfUser");
+        checkHttpSessionUser(userLessVo);
+
+        // 判断原密码是否正确
+        if (!passwordVo.getOldPassword().equals(userService.findPasswordById(userLessVo.getId()))){
+            System.out.println("数据库中密码：" + userService.findPasswordById(userLessVo.getId()));
+            System.out.println("提交的原密码：" + passwordVo.getOldPassword());
+            mav.addObject("failTitle", "修改失败");
+            mav.addObject("message", "原密码错误");
+            mav.setViewName("fail-info");
+            return mav;
+        }else { // 若正确，则开始修改密码，我也不帮你判空了，随你
+            try {
+                userService.modifyPassword(userLessVo.getId(), passwordVo.getPassword());
+                mav.addObject("failTitle", "修改成功");
+                mav.addObject("message", "请重新登录");
+                mav.setViewName("fail-info");
+                return mav;
+            } catch (UserModificationException e) {
+                mav.addObject("failTitle", "修改失败");
+                mav.addObject("message", e.getMessage());
+                mav.setViewName("fail-info");
+                return mav;
+            }
+        }
+    }
+
+
 
 
     /**

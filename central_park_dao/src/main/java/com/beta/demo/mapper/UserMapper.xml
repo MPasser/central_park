@@ -53,6 +53,12 @@
         where username = #{username}
     </select>
 
+    <select id="selectPasswordById" parameterType="String" resultType="String">
+        select password
+        from t_user
+        where id = #{id}
+    </select>
+
 
     <insert id="insert" parameterType="User">
         insert into t_user (id, username, password, portrait, register_date, gender, email)
@@ -67,19 +73,25 @@
 
     <update id="update" parameterType="User">
         update t_user
-        set username     = #{username},
-            password     = #{password},
-            portrait     = #{portrait},
-            gender       = #{gender},
-            email        = #{email}
+        set username = #{username},
+            password = #{password},
+            portrait = #{portrait},
+            gender   = #{gender},
+            email    = #{email}
         where id = #{id}
     </update>
 
     <update id="updateBasicInfo" parameterType="User">
         update t_user
-        set username     = #{username},
-            gender       = #{gender},
-            email        = #{email}
+        set username = #{username},
+            gender   = #{gender},
+            email    = #{email}
+        where id = #{id}
+    </update>
+
+    <update id="updatePassword">
+        update t_user
+        set password = #{password}
         where id = #{id}
     </update>
 

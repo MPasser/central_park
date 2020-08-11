@@ -63,7 +63,7 @@ public class ChatMessageController {
         UserLessVo userLessVo = (UserLessVo) httpSession.getAttribute("selfUser");
 
         // check if there is user info in session
-        if (null == userLessVo) {
+        if (ObjectUtils.isEmpty(userLessVo)) {
             // TODO : 这里可能需要做一些跳转处理
             System.out.println("user is null!");
             return "ERROR:用户名为空";

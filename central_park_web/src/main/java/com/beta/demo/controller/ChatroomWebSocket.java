@@ -104,7 +104,6 @@ public class ChatroomWebSocket {
         for (ChatroomWebSocket item : webSockets) {
             String jsonActiveUsers = JSON.toJSONString(activeUsers);
             try {
-                // FIXME : 这里把用户的密码直接传过去了，虽然是密文，但也不太好，考虑创建新的VO
                 item.session.getBasicRemote().sendText("USER:" + jsonActiveUsers);
             } catch (IOException e) {
                 e.printStackTrace();

@@ -1,6 +1,7 @@
 package com.beta.demo.dao;
 
 import com.beta.demo.pojo.User;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -64,4 +65,19 @@ public interface UserDao {
      * @param user
      */
     void updateBasicInfo(User user);
+
+
+    /**
+     * select password by id
+     * @param id
+     * @return
+     */
+    String selectPasswordById(String id);
+
+    /**
+     * update user password
+     * @param id
+     * @param password
+     */
+    void updatePassword(@Param("id") String id, @Param("password") String password);
 }

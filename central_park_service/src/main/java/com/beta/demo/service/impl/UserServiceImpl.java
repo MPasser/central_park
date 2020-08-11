@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.StreamUtils;
 
 import java.io.File;
@@ -149,7 +150,7 @@ public class UserServiceImpl implements UserService {
     public void modifyBasicInfo(User user) throws UserModificationException {
         // 检查用户名是否已存在
         User oldUser = userDao.selectById(user.getId());
-        if (null == oldUser) {
+        if (ObjectUtils.isEmpty(oldUser)) {
             throw new UserModificationException("需要修改的用户" + user.getId() + "不存在");
         }else if (!user.getUsername().equals(oldUser.getUsername())){ // 用户名有变动，则在数据库中查询新姓名
             if (null != userDao.selectByUsername(user.getUsername())) {
@@ -158,6 +159,21 @@ public class UserServiceImpl implements UserService {
         }
 
         userDao.updateBasicInfo(user);
+    }
+
+    @Override
+    public String findPasswordById(String id) {
+        String password = userDao.selectPasswordById(id);
+        return password;
+    }
+
+    @Override
+    public void modifyPassword(String id, String password) throws UserModificationException {
+        User user = userDao.selectById(id);
+        if (ObjectUtils.isEmpty(user)) {
+            throw new UserModificationException("需要修改的用户" + user.getId() + "不存在");
+        }
+        userDao.updatePassword(id,password);
     }
 
 }

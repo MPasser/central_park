@@ -275,7 +275,12 @@ function checkLoginForm() {
  */
 
 
-function submitForm(form) {
+function submitForm(form, method) {
+    if (!method){
+        method = 'get';
+    }
+    form.attr('method', method);
+    console.log('表单已提交');
     form.submit();
 }
 
@@ -301,6 +306,27 @@ function checkModifyForm() {
 
     // flag = checkUsername() && checkPassword() && checkRepassword() && checkEmail();
     // alert(flag);
+    return flag;
+}
+
+function checkModPwdForm() {
+    let flag = true;
+    if (!checkLoginPassword()){
+        console.log("old-password invalid");
+        flag = false;
+    }
+    if (!checkPassword($('#password').val(),$('#password-form-info'))){
+        console.log("password invalid");
+        flag = false;
+    }
+    if (!checkRepassword()){
+        console.log("repassword invalid");
+        flag = false;
+    }
+
+    if (flag) {
+        encodePassword();
+    }
     return flag;
 }
 

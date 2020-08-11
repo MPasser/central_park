@@ -76,4 +76,8 @@ public interface UserService {
     void modifyGender(String userId, boolean b);
 
     void modifyBasicInfo(User user) throws UserModificationException;
+
+    String findPasswordById(String id);
+
+    void modifyPassword(String id, String password) throws UserModificationException;
 }
