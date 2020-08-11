@@ -275,11 +275,7 @@ function checkLoginForm() {
  */
 
 
-function submitForm(form, method) {
-    if (!method){
-        method = 'get';
-    }
-    form.attr('method', method);
+function submitForm(form) {
     console.log('表单已提交');
     form.submit();
 }

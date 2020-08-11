@@ -1,5 +1,6 @@
 package com.beta.demo.service;
 
+import com.beta.demo.dto.PortraitDto;
 import com.beta.demo.dto.UserDto;
 import com.beta.demo.exception.UserModificationException;
 import com.beta.demo.exception.UserRegisterException;
@@ -75,9 +76,35 @@ public interface UserService {
 
     void modifyGender(String userId, boolean b);
 
+    /**
+     * 修改用户基本信息，包括：
+     * 用户名
+     * 性别
+     * 邮箱
+     * @param user
+     * @throws UserModificationException
+     */
     void modifyBasicInfo(User user) throws UserModificationException;
 
+
+    /**
+     * 根据用户id寻找并返回密码
+     * @param id
+     * @return
+     */
     String findPasswordById(String id);
 
+    /**
+     * 为指定id的User修改密码
+     * @param id
+     * @param password
+     * @throws UserModificationException
+     */
     void modifyPassword(String id, String password) throws UserModificationException;
+
+    /**
+     * 为指定id的User修改头像
+     * @param portraitDto
+     */
+    void modifyPortrait(String id, PortraitDto portraitDto) throws UserModificationException, FileUploadException;
 }

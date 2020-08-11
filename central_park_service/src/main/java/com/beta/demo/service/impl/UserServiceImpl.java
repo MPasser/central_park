@@ -2,6 +2,7 @@ package com.beta.demo.service.impl;
 
 import com.beta.demo.constant.UserConstant;
 import com.beta.demo.dao.UserDao;
+import com.beta.demo.dto.PortraitDto;
 import com.beta.demo.dto.UserDto;
 import com.beta.demo.exception.UserModificationException;
 import com.beta.demo.exception.UserRegisterException;
@@ -174,6 +175,28 @@ public class UserServiceImpl implements UserService {
             throw new UserModificationException("需要修改的用户" + user.getId() + "不存在");
         }
         userDao.updatePassword(id,password);
+    }
+
+    @Override
+    public void modifyPortrait(String id, PortraitDto portraitDto) throws UserModificationException, FileUploadException {
+        User user = userDao.selectById(id);
+        if (ObjectUtils.isEmpty(user)) {
+            throw new UserModificationException("需要修改的用户" + user.getId() + "不存在");
+        }
+
+        // 上传头像文件
+        String filename = StringUtils.getRandomFilename(portraitDto.getFilename());
+        String filepath = portraitDto.getUploadPath() + File.separator + filename;
+
+        try {
+            StreamUtils.copy(portraitDto.getInputStream(), new FileOutputStream(filepath));
+        } catch (IOException e) {
+            throw new FileUploadException("文件上传异常：" + e.getMessage());
+        }
+
+        String downloadPath = UserConstant.PORTRAIT_DOWNLOAD_PATH + File.separator + filename;
+
+        userDao.updatePortrait(id, downloadPath);
     }
 
 }

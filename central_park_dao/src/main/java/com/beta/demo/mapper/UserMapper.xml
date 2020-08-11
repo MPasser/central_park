@@ -95,4 +95,9 @@
         where id = #{id}
     </update>
 
+    <update id="updatePortrait">
+        update t_user
+        set portrait = #{portrait}
+        where id = #{id}
+    </update>
 </mapper>

@@ -3,7 +3,7 @@ package com.beta.demo.vo;
 public class UserLessVo {
     private String id;
     private String username;
-    private String portrait;
+    private String portrait; // 指头像的文件路径
 
     private String email;
     private boolean gender;

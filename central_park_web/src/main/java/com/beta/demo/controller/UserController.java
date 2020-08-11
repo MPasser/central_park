@@ -1,6 +1,7 @@
 package com.beta.demo.controller;
 
 import com.beta.demo.constant.UserConstant;
+import com.beta.demo.dto.PortraitDto;
 import com.beta.demo.dto.UserDto;
 import com.beta.demo.exception.FileOversizeException;
 import com.beta.demo.exception.UserLoginException;
@@ -15,10 +16,8 @@ import org.apache.commons.fileupload.FileUploadException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.ObjectUtils;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.commons.CommonsMultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpSession;
@@ -364,7 +363,12 @@ public class UserController {
     }
 
 
-
+    /**
+     * 更改用户密码
+     * @param passwordVo
+     * @param httpSession
+     * @return
+     */
     @RequestMapping(value = "/modifyPassword", method = RequestMethod.POST)
     public  ModelAndView modifyPassword(@ModelAttribute PasswordVo passwordVo, HttpSession httpSession){
         System.out.println("modifyPassword开始执行");
@@ -400,7 +404,51 @@ public class UserController {
     }
 
 
+    @RequestMapping("/modifyPortrait")
+    public ModelAndView modifyPortrait(@RequestParam CommonsMultipartFile portrait, HttpSession httpSession){
+        ModelAndView mav = new ModelAndView();
+        String uploadPath = httpSession.getServletContext().getRealPath(UserConstant.PORTRAIT_UPLOAD_PATH);
 
+        // 登录的用户信息
+        UserLessVo userLessVo = (UserLessVo) httpSession.getAttribute("selfUser");
+        checkHttpSessionUser(userLessVo);
+
+        // 用于数据传输的PortraitDto
+        PortraitDto portraitDto = new PortraitDto();
+
+
+        if (ObjectUtils.isEmpty(portrait)){
+            mav.addObject("failTitle", "修改失败");
+            mav.addObject("message", "图片接收错误");
+            mav.setViewName("fail-info");
+            return mav;
+        }else { // 非空
+            try {
+                System.out.println("文件大小：" + portrait.getSize());
+                if (portrait.getSize() > UserConstant.PORTRAIT_MAX_SIZE) {
+                    throw new FileOversizeException("文件内容过大，不应超过3M");
+                }
+                portraitDto.setInputStream(portrait.getInputStream());
+                portraitDto.setFilename(portrait.getOriginalFilename());
+                portraitDto.setUploadPath(uploadPath);
+
+                userService.modifyPortrait(userLessVo.getId(), portraitDto);
+            } catch (IOException | FileOversizeException | UserModificationException | FileUploadException e) {
+                mav.addObject("failTitle", "修改失败");
+                mav.addObject("message", "头像文件上传失败：" + e.getMessage());
+                mav.setViewName("fail-info");
+                return mav;
+            }
+
+
+            mav.addObject("failTitle", "修改成功");
+            mav.addObject("message", "请重新登录");
+            mav.setViewName("fail-info");
+            return mav;
+
+        }
+
+    }
 
     /**
      * 传入一个UserLessVo，判断是否空和正确性，若未通过检查，返回指定的ModelAndView

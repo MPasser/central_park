@@ -80,4 +80,11 @@ public interface UserDao {
      * @param password
      */
     void updatePassword(@Param("id") String id, @Param("password") String password);
+
+    /**
+     * update user portrait
+     * @param id
+     * @param portrait
+     */
+    void updatePortrait(@Param("id") String id, @Param("portrait") String portrait);
 }

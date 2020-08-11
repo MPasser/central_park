@@ -157,7 +157,7 @@
             </div>
 
             <div class="modal-body">
-                <form class="form-horizontal" id="form-modify-password" action="/modifyPassword" onsubmit="return checkModPwdForm();">
+                <form class="form-horizontal" id="form-modify-password" action="/modifyPassword" onsubmit="return checkModPwdForm();" method="post">
                     <div class="form-group">
                         <label for="old-password" class="control-label col-xs-3">旧密码:</label>
                         <div class="col-xs-6">
@@ -192,7 +192,7 @@
 
             <div class="modal-footer">
                 <button class="btn btn-danger" data-dismiss="modal"
-                        onclick="submitForm($('#form-modify-password'),'post');">
+                        onclick="submitForm($('#form-modify-password'));">
                     修改
                 </button>
                 <button class="btn btn-primary cancel" data-dismiss="modal">取消</button>
@@ -218,22 +218,18 @@
             </div>
 
             <div class="modal-body">
-                <form class="form-horizontal" id="form-modify-portrait">
+                <form class="form-horizontal" action="/modifyPortrait" id="form-modify-portrait" method="post" enctype="multipart/form-data">
                     <div class="form-group ">
                         <div class="col-xs-2">
                             <!-- 占位 -->
                         </div>
-                        <label for="portrait" class="control-label col-xs-1">头像（不选即使用原头像）:</label>
+                        <label for="portrait" class="control-label col-xs-1">头像:</label>
                         <div class="col-xs-2">
                             <input type="file" class="form-control " id="portrait" name="portrait"
                                    onchange="refreshPortraitPreview()"/>
                         </div>
-                        <div class="col-sm-1">
-                            <button type="button" class="btn btn-warning"
-                                    onclick="resetPortrait($('#oldPortraitSrc').val())">重置头像
-                            </button>
-                        </div>
-                        <label for="portrait-preview" class="control-label col-xs-1">头像预览:</label>
+
+                        <label for="portrait-preview" class="control-label col-xs-2">头像预览:</label>
 
                         <div class="col-xs-2">
                             <img src="${userInfo.portrait}" id="portrait-preview">
