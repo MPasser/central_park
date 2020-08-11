@@ -4,6 +4,7 @@ import com.beta.demo.constant.UserConstant;
 import com.beta.demo.dto.UserDto;
 import com.beta.demo.exception.FileOversizeException;
 import com.beta.demo.exception.UserLoginException;
+import com.beta.demo.exception.UserModificationException;
 import com.beta.demo.exception.UserRegisterException;
 import com.beta.demo.pojo.User;
 import com.beta.demo.service.UserService;
@@ -281,41 +282,90 @@ public class UserController {
     }
 
 
-    @RequestMapping(value = "/modifyInfo", method = RequestMethod.POST)
+    @RequestMapping(value = "/modifyBasicInfo", method = RequestMethod.POST)
     public ModelAndView modifySelfUser(@ModelAttribute UserVo userVo, HttpSession httpSession) {
 
         ModelAndView mav = new ModelAndView();
         String uploadPath = httpSession.getServletContext().getRealPath(UserConstant.PORTRAIT_UPLOAD_PATH);
 
-        // validate the form elements
-        Pattern pattern = Pattern.compile("[\\w]{2,15}");
-        Matcher matcher = pattern.matcher(userVo.getUsername());
-        if (!matcher.matches()) {
-            mav.addObject("failTitle", "修改失败");
-            mav.addObject("message", "用户名不符合规则");
-            mav.setViewName("fail-info");
-            return mav;
+        // userVo 传入的新用户信息
+
+        // 登录的用户信息
+        UserLessVo userLessVo = (UserLessVo) httpSession.getAttribute("selfUser");
+        checkHttpSessionUser(userLessVo);
+        String userId = userLessVo.getId();
+
+
+        Pattern pattern;
+        Matcher matcher;
+
+        // 查看用户名是否更改，且赋值给DTO
+        String voUsername = userVo.getUsername();
+        if (!voUsername.equals(userLessVo.getUsername())) { // 在用户名发生更改的情况下
+            pattern = Pattern.compile("[\\w]{2,15}");
+            matcher = pattern.matcher(voUsername);
+            if (!matcher.matches()) { // 用户名不符合规则
+                mav.addObject("failTitle", "修改失败");
+                mav.addObject("message", "用户名不符合规则");
+                mav.setViewName("fail-info");
+                return mav;
+            } else if (!ObjectUtils.isEmpty(userService.findByUsername(voUsername))) { // 用户名符合规则但已存在
+                mav.addObject("failTitle", "修改失败");
+                mav.addObject("message", "用户名已存在");
+                mav.setViewName("fail-info");
+                return mav;
+            }
         }
 
-        if (ObjectUtils.isEmpty(userVo.getEmail())) {
+
+        // 你要绕过js检查搞我，我就默认你是男的
+        boolean voGender = userVo.getGender();
+        if (ObjectUtils.isEmpty(voGender)) {
+            userVo.setGender(true);
+        }
+
+
+        // 将邮箱赋值给DTO
+        String voEmail = userVo.getEmail();
+        if (ObjectUtils.isEmpty(voEmail)) { // 若邮箱为空则空
             userVo.setEmail(null);
         } else {
             pattern = Pattern.compile("[\\da-z]+([\\-\\.\\_]?[\\da-z]+)*@[\\da-z]+([\\-\\.]?[\\da-z]+)*(\\.[a-z]{2,})+");
-            matcher = pattern.matcher(userVo.getEmail());
-            if (!matcher.matches()) {
-                mav.addObject("failTitle", "修改");
+            matcher = pattern.matcher(voEmail);
+            if (!matcher.matches()) { // 若邮箱有值且不符合规则
+                mav.addObject("failTitle", "修改失败");
                 mav.addObject("message", "邮箱不符合规则");
                 mav.setViewName("fail-info");
                 return mav;
             }
         }
 
-        // 你要绕过js检查搞我，我就默认你是男的
-        if (ObjectUtils.isEmpty(userVo.getGender())) {
-            userVo.setGender(true);
+        User user = new User();
+        user.setId(userLessVo.getId());
+        user.setUsername(userVo.getUsername());
+        user.setGender(userVo.getGender());
+        user.setEmail(userVo.getEmail());
+
+        try {
+            userService.modifyBasicInfo(user);
+        } catch (UserModificationException e) {
+            mav.addObject("failTitle", "修改失败");
+            mav.addObject("message", e.getMessage());
+            mav.setViewName("fail-info");
+            return mav;
         }
 
-        return null;
+        // 更改httpSession中的UserLessVo值
+        userLessVo.setUsername(userVo.getUsername());
+        userLessVo.setGender(userVo.getGender());
+        userLessVo.setEmail(userVo.getEmail());
+
+        httpSession.setAttribute("selfUser",userLessVo);
+
+
+        mav.addObject("userInfo",userLessVo);
+        mav.setViewName("selfUser");
+        return mav;
     }
 
 

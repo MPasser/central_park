@@ -6,6 +6,12 @@
     height: auto;
 }
 
+img.img-preview {
+    float: left;
+    width: 94px;
+    height: auto;
+}
+
 div.form-group label.control-label{
     padding-top: 0;
 }

@@ -75,4 +75,12 @@
         where id = #{id}
     </update>
 
+    <update id="updateBasicInfo" parameterType="User">
+        update t_user
+        set username     = #{username},
+            gender       = #{gender},
+            email        = #{email}
+        where id = #{id}
+    </update>
+
 </mapper>

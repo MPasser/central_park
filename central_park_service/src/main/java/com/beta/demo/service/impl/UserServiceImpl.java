@@ -3,6 +3,7 @@ package com.beta.demo.service.impl;
 import com.beta.demo.constant.UserConstant;
 import com.beta.demo.dao.UserDao;
 import com.beta.demo.dto.UserDto;
+import com.beta.demo.exception.UserModificationException;
 import com.beta.demo.exception.UserRegisterException;
 import com.beta.demo.exception.UserLoginException;
 import com.beta.demo.pojo.User;
@@ -89,7 +90,7 @@ public class UserServiceImpl implements UserService {
 
         // 检查用户名是否已存在
         if (null != userDao.selectByUsername(userDto.getUsername())) {
-            throw new UserRegisterException("用户名" + userDto + "已存在");
+            throw new UserRegisterException("用户名" + userDto.getUsername() + "已存在");
         }
 
 
@@ -127,6 +128,36 @@ public class UserServiceImpl implements UserService {
     @Override
     public void modify(User user) {
         // TODO
+    }
+
+    @Override
+    public void modifyUsername(String userId, String voUsername) {
+
+    }
+
+    @Override
+    public void modifyEmail(String userId, String voEmail) {
+
+    }
+
+    @Override
+    public void modifyGender(String userId, boolean b) {
+
+    }
+
+    @Override
+    public void modifyBasicInfo(User user) throws UserModificationException {
+        // 检查用户名是否已存在
+        User oldUser = userDao.selectById(user.getId());
+        if (null == oldUser) {
+            throw new UserModificationException("需要修改的用户" + user.getId() + "不存在");
+        }else if (!user.getUsername().equals(oldUser.getUsername())){ // 用户名有变动，则在数据库中查询新姓名
+            if (null != userDao.selectByUsername(user.getUsername())) {
+                throw new UserModificationException("用户名" + user.getUsername() + "已存在");
+            }
+        }
+
+        userDao.updateBasicInfo(user);
     }
 
 }

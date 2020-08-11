@@ -1,6 +1,7 @@
 package com.beta.demo.service;
 
 import com.beta.demo.dto.UserDto;
+import com.beta.demo.exception.UserModificationException;
 import com.beta.demo.exception.UserRegisterException;
 import com.beta.demo.exception.UserLoginException;
 import com.beta.demo.pojo.User;
@@ -68,4 +69,11 @@ public interface UserService {
      */
     void modify(User user);
 
+    void modifyUsername(String userId, String voUsername);
+
+    void modifyEmail(String userId, String voEmail);
+
+    void modifyGender(String userId, boolean b);
+
+    void modifyBasicInfo(User user) throws UserModificationException;
 }

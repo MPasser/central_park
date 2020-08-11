@@ -26,13 +26,19 @@
             <h3 class="text-center">修改信息</h3>
         </div>
         <div class="panel-body">
-            <form class="form-horizontal" action="${ctx}/modifyInfo" onsubmit="return checkForm()" method="post">
+            <!--
+                username
+                gender
+                email
+             -->
+            <form class="form-horizontal" action="${ctx}/modifyBasicInfo" onsubmit="return checkModifyForm()"
+                  method="post">
 
 
                 <div class="form-group">
                     <label for="user-id" class="control-label col-xs-3">id:</label>
                     <div class="col-xs-6 ">
-                        <input type="text" class="form-control " id="user-id"
+                        <input type="text" class="form-control" id="user-id"
                                value="${userInfo.id}" disabled/>
                     </div>
                     <div class="col-xs-3 form-group-info" id="user-id-form-info">
@@ -52,31 +58,12 @@
 
 
                 <div class="form-group">
-                    <label for="old-password" class="control-label col-xs-3">旧密码:</label>
-                    <div class="col-xs-6">
-                        <input type="password" class="form-control " id="old-password" name="password"
-                               placeholder="请输入旧密码" onblur="checkLoginPassword();">
+                    <label for="btn-modify-password" class="control-label col-xs-3">修改密码:</label>
+                    <div class="col-xs-2">
+                        <input type="button" class="form-control btn btn-warning" id="btn-modify-password" value="修改密码"
+                               data-toggle="modal" data-target="#modify-password">
                     </div>
-                    <div class="col-xs-3 form-group-info" id="old-password-form-info">
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="password" class="control-label col-xs-3">新密码:</label>
-                    <div class="col-xs-6">
-                        <input type="password" class="form-control " id="password" name="password"
-                               placeholder="请输入新密码 (6-20个字符)"
-                               onblur="checkPassword(this.value,$('#password-form-info'));checkRepassword();">
-                    </div>
-                    <div class="col-xs-3 form-group-info" id="password-form-info">
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="repassword" class="control-label col-xs-3">重复密码:</label>
-                    <div class="col-xs-6">
-                        <input type="password" class="form-control " id="repassword" placeholder="请重复密码"
-                               onblur="checkRepassword()">
-                    </div>
-                    <div class="col-xs-3 form-group-info" id="repassword-form-info">
+                    <div class="col-xs-7 form-group-info">
                     </div>
                 </div>
 
@@ -105,7 +92,6 @@
                 </div>
 
 
-
                 <div class="form-group">
                     <label for="email" class="control-label col-xs-3">邮箱:</label>
                     <div class="col-xs-6">
@@ -120,18 +106,19 @@
                     <div class="col-xs-2">
                         <!-- 占位 -->
                     </div>
-                    <label for="portrait" class="control-label col-xs-1">（不选即使用默认）头像:</label>
-                    <div class="col-xs-2">
-                        <input type="file" class="form-control " id="portrait" name="portrait" onchange="refreshPortraitPreview()"/>
-                    </div>
-                    <div class="col-sm-1">
-                        <button type="button" class="btn btn-warning" onclick="resetPortrait($('#oldPortraitSrc').val())">重置头像</button>
-                    </div>
-                    <label for="portrait-preview" class="control-label col-xs-1">头像预览:</label>
+                    <label class="control-label col-xs-1">头像:</label>
 
                     <div class="col-xs-2">
-                        <img src="${userInfo.portrait}" id="portrait-preview">
-                        <input value="${userInfo.portrait}" id="oldPortraitSrc" style="display: none" />
+                        <input type="button" class="form-control btn btn-warning" id="btn-modify-portrait" value="更换头像"
+                               data-toggle="modal" data-target="#modify-portrait">
+                    </div>
+
+                    <div class="col-xs-2">
+                        <img src="${userInfo.portrait}" class="img-preview">
+                    </div>
+
+                    <div class="col-xs-2">
+                        <!-- 占位 -->
                     </div>
                 </div>
 
@@ -154,8 +141,121 @@
             </form>
         </div>
     </div>
-
-
 </div>
+
+
+<!-- modify password start -->
+<div class="modal fade" tabindex="-1" id="modify-password">
+    <!-- 窗口声明 -->
+    <div class="modal-dialog modal-lg">
+        <!-- 内容声明 -->
+        <div class="modal-content">
+            <!-- 头部、主体、脚注 -->
+            <div class="modal-header">
+                <button class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">修改密码</h4>
+            </div>
+
+            <div class="modal-body">
+                <form class="form-horizontal" id="form-modify-password">
+                    <div class="form-group">
+                        <label for="old-password" class="control-label col-xs-3">旧密码:</label>
+                        <div class="col-xs-6">
+                            <input type="password" class="form-control " id="old-password" name="password"
+                                   placeholder="请输入旧密码" onblur="checkLoginPassword();">
+                        </div>
+                        <div class="col-xs-3 form-group-info" id="old-password-form-info">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="password" class="control-label col-xs-3">新密码:</label>
+                        <div class="col-xs-6">
+                            <input type="password" class="form-control " id="password" name="password"
+                                   placeholder="请输入新密码 (6-20个字符)"
+                                   onblur="checkPassword(this.value,$('#password-form-info'));checkRepassword();">
+                        </div>
+                        <div class="col-xs-3 form-group-info" id="password-form-info">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="repassword" class="control-label col-xs-3">重复密码:</label>
+                        <div class="col-xs-6">
+                            <input type="password" class="form-control " id="repassword" placeholder="请重复密码"
+                                   onblur="checkRepassword()">
+                        </div>
+                        <div class="col-xs-3 form-group-info" id="repassword-form-info">
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+
+            <div class="modal-footer">
+                <button class="btn btn-danger updateProductType" data-dismiss="modal"
+                        onclick="submitForm($('#form-modify-password'));">
+                    修改
+                </button>
+                <button class="btn btn-primary cancel" data-dismiss="modal">取消</button>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+<!-- modify password end -->
+
+
+<!-- modify portrait start -->
+<div class="modal fade" tabindex="-1" id="modify-portrait">
+    <!-- 窗口声明 -->
+    <div class="modal-dialog modal-lg">
+        <!-- 内容声明 -->
+        <div class="modal-content">
+            <!-- 头部、主体、脚注 -->
+            <div class="modal-header">
+                <button class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">修改头像</h4>
+            </div>
+
+            <div class="modal-body">
+                <form class="form-horizontal" id="form-modify-portrait">
+                    <div class="form-group ">
+                        <div class="col-xs-2">
+                            <!-- 占位 -->
+                        </div>
+                        <label for="portrait" class="control-label col-xs-1">头像（不选即使用原头像）:</label>
+                        <div class="col-xs-2">
+                            <input type="file" class="form-control " id="portrait" name="portrait"
+                                   onchange="refreshPortraitPreview()"/>
+                        </div>
+                        <div class="col-sm-1">
+                            <button type="button" class="btn btn-warning"
+                                    onclick="resetPortrait($('#oldPortraitSrc').val())">重置头像
+                            </button>
+                        </div>
+                        <label for="portrait-preview" class="control-label col-xs-1">头像预览:</label>
+
+                        <div class="col-xs-2">
+                            <img src="${userInfo.portrait}" id="portrait-preview">
+                            <input value="${userInfo.portrait}" id="oldPortraitSrc" style="display: none"/>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+
+            <div class="modal-footer">
+                <button class="btn btn-danger updateProductType" data-dismiss="modal"
+                        onclick="submitForm($('#form-modify-password'));">
+                    修改
+                </button>
+                <button class="btn btn-primary cancel" data-dismiss="modal">取消</button>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+<!-- modify portrait end -->
 </body>
 </html>

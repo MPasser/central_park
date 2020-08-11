@@ -55,4 +55,13 @@ public interface UserDao {
      */
     void update(User user);
 
+
+    /**
+     * update user in fields :
+     * username
+     * gender
+     * email
+     * @param user
+     */
+    void updateBasicInfo(User user);
 }

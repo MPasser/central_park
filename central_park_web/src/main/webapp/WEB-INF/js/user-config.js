@@ -16,7 +16,7 @@ function refreshPortraitPreview() {
     console.log("文件大小：" + portraitFile.size);
 
     // 检查文件的大小与格式
-    if (portraitFile.size > 1024*3072){
+    if (portraitFile.size > 1024 * 3072) {
         alert("图片大小不能够超过3M");
         $('#portrait').val('');
         return false;
@@ -28,7 +28,7 @@ function refreshPortraitPreview() {
     console.log("dotIndex：" + dotIndex);
 
 
-    if (dotIndex === filename.length - 1 || -1 === dotIndex){
+    if (dotIndex === filename.length - 1 || -1 === dotIndex) {
         alert("图片格式不支持，支持的格式有[\"bmp\",\"gif\",\"jpeg\",\"jpg\",\"png\",\"psd\",\"webp\"]");
         $('#portrait').val('');
         return false;
@@ -37,19 +37,19 @@ function refreshPortraitPreview() {
     console.log("文件后缀名：" + fileSuffixName);
 
 
-    let fileFormats = ["bmp","gif","jpeg","jpg","png","psd","webp"];
+    let fileFormats = ["bmp", "gif", "jpeg", "jpg", "png", "psd", "webp"];
     let flag = false;
-    fileFormats.forEach(function (format,index) {
-        if (format === fileSuffixName){
+    fileFormats.forEach(function (format, index) {
+        if (format === fileSuffixName) {
             flag = true;
         }
-        console.log("index:" + index +",format:" + format + ",flag:" + flag);
+        console.log("index:" + index + ",format:" + format + ",flag:" + flag);
     });
 
     // 如果通过了检查，则更新头像预览
-    if (flag){
+    if (flag) {
         $('#portrait-preview').attr('src', window.URL.createObjectURL(portraitFile));
-    }else {
+    } else {
         alert("图片格式不支持，支持的格式有[\"bmp\",\"gif\",\"jpeg\",\"jpg\",\"png\",\"psd\",\"webp\"]");
         $('#portrait').val('');
         return false;
@@ -173,6 +173,7 @@ function checkEmail() {
 // encode password
 function encodePassword() {
     let password = $('#password').val();
+    $('#old-password').val(md5($('#old-password').val()));
     $('#password').val(md5(password));
     $('#repassword').val(md5(password));
 }
@@ -188,7 +189,7 @@ function checkForm() {
         console.log("username invalid");
         flag = false;
     }
-    if (!checkPassword($('#password').val(),$('#password-form-info'))) {
+    if (!checkPassword($('#password').val(), $('#password-form-info'))) {
         alert(checkPassword());
         console.log("password invalid");
         flag = false;
@@ -215,12 +216,10 @@ function resetPortrait(oldPortraitSrc) {
     $('#portrait').val('');
     $('#portrait-preview').attr('src', oldPortraitSrc);
 }
+
 /**
  * register form validation functions end
  */
-
-
-
 
 
 /**
@@ -253,30 +252,57 @@ function checkLoginPassword() {
         info.text('请输入密码');
         info.css('color', '#dd4822');
         return false;
-    } else{
+    } else {
         info.text('');
         return true;
     }
 }
+
 function checkLoginForm() {
 
     let flag;
 
     flag = checkLoginUsername() && checkLoginPassword();
 
-    if (flag){
+    if (flag) {
         encodePassword();
     }
     return flag;
 }
+
 /**
  * login form validation end
  */
 
 
+function submitForm(form) {
+    form.submit();
+}
+
+
 /**
  * modify form validation start
  */
+
+function checkModifyForm() {
+    let flag = true;
+
+    // FIXME : 这里使用逻辑表达式flag赋值无法得到预期的结果,有undefined值出现；我服了，下面的checkLoginForm()方法都可以
+
+    if (!checkUsername()) {
+        alert(checkUsername());
+        console.log("username invalid");
+        flag = false;
+    }
+    if (!checkEmail()) {
+        console.log("email invalid");
+        flag = false;
+    }
+
+    // flag = checkUsername() && checkPassword() && checkRepassword() && checkEmail();
+    // alert(flag);
+    return flag;
+}
 
 /**
  * modify form validation end
