@@ -43,8 +43,4 @@
         <property name="maxUploadSize" value="12800000"/>
     </bean>
 
-    <!-- FIXME 用于页面测试，记得删除 -->
-    <mvc:view-controller path="/register" view-name="register"/>
-    <mvc:view-controller path="/test" view-name="test"/>
-
 </beans>

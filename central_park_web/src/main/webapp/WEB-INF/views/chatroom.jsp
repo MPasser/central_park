@@ -19,10 +19,23 @@
 
     <script type="text/javascript">
 
+        $(function () {
+            let textarea = document.getElementById('messageTextarea');
+            let btnSend = document.getElementById('btnSend');
+            textarea.addEventListener("keyup", function (event) {
+                event.preventDefault();
+                if (event.key === "Enter"){
+                    btnSend.click();
+                }
+            })
+
+        })
+
         let websocket = null;
         //判断当前浏览器是否支持WebSocket
         if ('WebSocket' in window) {
-            websocket = new WebSocket("ws://localhost:8080/chatroomWebSocket");
+            // FIXME : 提取变量
+            websocket = new WebSocket("ws://132.232.213.145:8080/chatroomWebSocket");
         } else {
             alert('当前浏览器不支持 websocket ，聊天室无法正常工作')
         }
@@ -88,7 +101,7 @@
 
         }
 
-
+        // 查看其他用户信息
         function checkUserInfo(pUser) {
 
             console.log(pUser);
@@ -118,8 +131,6 @@
             form.submit();
 
         }
-
-
 
 
         function showTextMessage(username, message) {
@@ -183,7 +194,7 @@
         }
 
 
-        // 将消息显示在网页上，需要更改，应当修改成提示消息的方法
+        // 将提示消息显示在网页上
         function showMessage(message, color) {
             let container = $('#message-body-container');
 
@@ -414,7 +425,9 @@
             </div>
             <br>
             <div class="form-group">
-                <button class="btn btn-primary pull-right" type="button" onclick="send();sendTextMessage();">发&nbsp;&nbsp;送</button>
+                <button class="btn btn-primary pull-right" type="button" onclick="send();sendTextMessage();"
+                        id="btnSend">发&nbsp;&nbsp;送
+                </button>
             </div>
         </form>
     </div>

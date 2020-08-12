@@ -69,7 +69,7 @@ public class UserServiceImpl implements UserService {
         User user = userDao.selectByUsername(username);
 
         if (null == user){
-            throw new UserLoginException("用户名为空");
+            throw new UserLoginException("用户名不正确");
         }else if (password.equals(user.getPassword())){
             return user;
         }else {

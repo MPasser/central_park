@@ -40,6 +40,13 @@ public class UserController {
         this.userService = userService;
     }
 
+
+    @RequestMapping("/registerPage")
+    public String registerPage(){
+        return "register";
+    }
+
+
     /**
      * 进行用户的注册
      *
@@ -65,15 +72,18 @@ public class UserController {
         }
 
 
-        // FIXME : 这里的密码已经被加密了，所以无法进行二次验证
-        // pattern = Pattern.compile("[\\w]{6,20}");
-        // matcher = pattern.matcher(userVo.getPassword());
-        // if (!matcher.matches()) {
-        //     mav.addObject("failTitle", "注册失败");
-        //     mav.addObject("message", "密码不符合规则");
-        //     mav.setViewName("register-fail");
-        //     return mav;
-        // }
+        // FIXME : 这里的密码已经被加密了，所以无法进行准确的二次验证
+        pattern = Pattern.compile("[\\w]{32}");
+        matcher = pattern.matcher(userVo.getPassword());
+        if (!matcher.matches()) {
+            mav.addObject("failTitle", "注册失败");
+            mav.addObject("message", "密码不符合规则");
+            mav.setViewName("fail-info");
+            return mav;
+        }
+
+
+
         if (ObjectUtils.isEmpty(userVo.getEmail())) {
             userVo.setEmail(null);
         } else {
@@ -145,8 +155,8 @@ public class UserController {
             return mav;
         }
 
-        // mav.addObject("message", "注册成功");
-        mav.setViewName("redirect:");
+        mav.addObject("failTitle", "注册成功");
+        mav.setViewName("fail-info");
         return mav;
     }
 

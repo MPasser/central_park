@@ -1,6 +1,12 @@
 //login.jsp jump to register.jsp
 function jumpToRegister() {
-    window.location = "register";
+    let form = $('<form>');
+    console.log("form");
+    form.attr('action', 'registerPage');
+    form.attr('method','post');
+    form.attr('style','display:none');
+    form.appendTo($('body'));
+    form.submit();
 }
 
 // jump to home page
@@ -185,12 +191,9 @@ function checkForm() {
     // FIXME : 这里使用逻辑表达式flag赋值无法得到预期的结果,有undefined值出现；我服了，下面的checkLoginForm()方法都可以
 
     if (!checkUsername()) {
-        alert(checkUsername());
-        console.log("username invalid");
         flag = false;
     }
     if (!checkPassword($('#password').val(), $('#password-form-info'))) {
-        alert(checkPassword());
         console.log("password invalid");
         flag = false;
     }
@@ -204,10 +207,12 @@ function checkForm() {
     }
 
     // flag = checkUsername() && checkPassword() && checkRepassword() && checkEmail();
-    // alert(flag);
+
 
     if (flag) {
         encodePassword();
+    }else{
+        alert("填写的信息不合规");
     }
     return flag;
 }
@@ -291,7 +296,6 @@ function checkModifyForm() {
     // FIXME : 这里使用逻辑表达式flag赋值无法得到预期的结果,有undefined值出现；我服了，下面的checkLoginForm()方法都可以
 
     if (!checkUsername()) {
-        alert(checkUsername());
         console.log("username invalid");
         flag = false;
     }
