@@ -1,6 +1,6 @@
 package com.beta.demo.exception;
 
-public class UserModificationException extends Throwable {
+public class UserModificationException extends Exception {
     public UserModificationException() {
     }
 

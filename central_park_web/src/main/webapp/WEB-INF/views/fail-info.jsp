@@ -24,7 +24,6 @@
         </div>
         <div class="panel-body">
             <p>${message}</p>
-            <!-- TODO : 跳转未测试 -->
             <p>点击<a href="javascript:void(0);" onclick="jumpToHomePage()">这里</a>返回主页</p>
         </div>
     </div>

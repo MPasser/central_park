@@ -37,4 +37,10 @@ public interface ChatMessageConstant {
     public static final String MSG_LOG_SCOPE_ALL = "ALL";
     public static final String MSG_LOG_SCOPE_FILE = "FILE";
 
+    /**
+     * constant of
+     * chat message file maximum size
+     */
+    public static final int CHAT_MSG_FILE_MAX_SIZE = 1024*3072;
+
 }

@@ -3,6 +3,7 @@ package com.beta.demo.service.impl;
 import com.beta.demo.constant.ChatMessageConstant;
 import com.beta.demo.dao.ChatMessageDao;
 import com.beta.demo.dto.ChatMessageDto;
+import com.beta.demo.exception.ChatMessageIsEmptyException;
 import com.beta.demo.pojo.ChatMessage;
 import com.beta.demo.service.ChatMessageService;
 import com.beta.demo.util.StringUtils;
@@ -10,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.StreamUtils;
 
 import java.io.File;
@@ -36,7 +38,10 @@ public class ChatMessageServiceImpl implements ChatMessageService {
      * @param chatMessage
      */
     @Override
-    public void addText(ChatMessage chatMessage) {
+    public void addText(ChatMessage chatMessage) throws ChatMessageIsEmptyException {
+        if (ObjectUtils.isEmpty(chatMessage)){
+            throw new ChatMessageIsEmptyException("消息文本为空");
+        }
         chatMessageDao.insert(chatMessage);
     }
 
@@ -47,18 +52,15 @@ public class ChatMessageServiceImpl implements ChatMessageService {
      * @return
      */
     @Override
-    public String addFile(ChatMessageDto chatMessageDto) throws FileNotFoundException {
+    public String addFile(ChatMessageDto chatMessageDto) throws IOException {
         System.out.println(chatMessageDto);
 
         //上传文件
         String filename = StringUtils.renameFilename(chatMessageDto.getFileMessageName(), chatMessageDto.getFileMessageUploadPath());
         String filepath = chatMessageDto.getFileMessageUploadPath() + File.separator + filename;
-        try {
-            // FIXME : 理应抛出
-            StreamUtils.copy(chatMessageDto.getFileMessageInputStream(), new FileOutputStream(filepath));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+
+        StreamUtils.copy(chatMessageDto.getFileMessageInputStream(), new FileOutputStream(filepath));
+
 
         ChatMessage chatMessage = new ChatMessage();
 

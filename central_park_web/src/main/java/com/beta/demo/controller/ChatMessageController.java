@@ -3,6 +3,8 @@ package com.beta.demo.controller;
 import com.beta.demo.constant.ChatMessageConstant;
 import com.beta.demo.constant.PaginationConstant;
 import com.beta.demo.dto.ChatMessageDto;
+import com.beta.demo.exception.ChatMessageIsEmptyException;
+import com.beta.demo.exception.FileOversizeException;
 import com.beta.demo.pojo.ChatMessage;
 import com.beta.demo.pojo.User;
 import com.beta.demo.service.ChatMessageService;
@@ -68,6 +70,9 @@ public class ChatMessageController {
             System.out.println("user is null!");
             return "ERROR:用户名为空";
         }
+        if (ObjectUtils.isEmpty(textMessage)) {
+            return "ERROR:消息内容为空";
+        }
 
         ChatMessage chatMessage = new ChatMessage();
 
@@ -78,7 +83,7 @@ public class ChatMessageController {
 
         // get from parameters
         User u = userService.findById(userLessVo.getId());
-        if (null == u) {
+        if (ObjectUtils.isEmpty(u)) {
             // TODO : 这里可能需要做一些跳转处理
             System.out.println("user is wrong!");
             return "ERROR:用户信息有误";
@@ -88,7 +93,11 @@ public class ChatMessageController {
 
 
         // add message
-        chatMessageService.addText(chatMessage);
+        try {
+            chatMessageService.addText(chatMessage);
+        } catch (ChatMessageIsEmptyException e) {
+            return e.getMessage();
+        }
 
         return "OK:发送成功";
 
@@ -124,6 +133,7 @@ public class ChatMessageController {
             return "ERROR:文件名为空";
         }
 
+
         ChatMessageDto chatMessageDto = new ChatMessageDto();
 
         // get from default
@@ -133,7 +143,7 @@ public class ChatMessageController {
 
         // get from parameters
         User u = userService.findById(userLessVo.getId());
-        if (null == u) {
+        if (ObjectUtils.isEmpty(u)) {
             // TODO : 这里可能需要做一些跳转处理
             System.out.println("user is wrong!");
             return "ERROR:用户信息有误";
@@ -143,8 +153,11 @@ public class ChatMessageController {
         // process the file
         try {
             chatMessageDto.setFileMessageInputStream(fileMessage.getInputStream());
-        } catch (IOException e) {
-            e.printStackTrace();
+            if (fileMessage.getSize() > ChatMessageConstant.CHAT_MSG_FILE_MAX_SIZE) {
+                throw new FileOversizeException("发送的消息文件过大，最大为3M");
+            }
+        } catch (IOException | FileOversizeException e) {
+            return e.getMessage();
         }
 
         chatMessageDto.setFileMessageName(fileMessage.getOriginalFilename());
@@ -154,8 +167,8 @@ public class ChatMessageController {
         try {
             filenameAndPath = chatMessageService.addFile(chatMessageDto);
 
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
+        } catch (IOException e) {
+            return e.getMessage();
         }
 
         return "ECHO:MESSAGE:FILE:" + filenameAndPath;
@@ -184,7 +197,6 @@ public class ChatMessageController {
             mav.setViewName("fail-info");
             return mav;
         }
-
 
 
         PageHelper.startPage(pageNum, PaginationConstant.PAGE_SIZE);

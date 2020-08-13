@@ -17,8 +17,6 @@ public class StringUtils {
     public static String renameFilename(String filename, String dirPath) throws FileNotFoundException {
         String uniqFilename = filename;
 
-        // TODO 路径问题
-
         File fileDir = new File(dirPath);
 
         if (fileDir.isDirectory()) {
@@ -61,7 +59,7 @@ public class StringUtils {
 
 
 
-        Pattern pattern = Pattern.compile("(.*)\\((\\d)\\)$");
+        Pattern pattern = Pattern.compile("(.*)\\((\\d+)\\)$");
         Matcher matcher = pattern.matcher(prefix);
 
         if (matcher.matches()) {
