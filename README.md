@@ -11,14 +11,12 @@
 - 发送/接受即时文字消息
 - 发送/接受即时文件消息
 - 查看聊天记录
-- 定时删除聊天记录（待办）
 
 
 ## 项目结构
 ```markdown
 |- com
   |- beta
-    |- demo
     |- constant		// 自定义常量
     |- controller	// Controller类
     |- dao		// DAO类

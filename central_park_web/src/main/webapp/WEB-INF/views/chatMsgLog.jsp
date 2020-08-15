@@ -81,7 +81,7 @@
                 <div>
                     <p>
                             ${msgItem.user.username} (<fmt:formatDate value="${msgItem.sentTime}"
-                                                                      pattern="MM-dd hh:mm"/>)：
+                                                                      pattern="MM-dd HH:mm"/>)：
                     </p>
                     <div class="panel-body message-item">
                         <c:if test="${'0' == msgItem.messageType}">
